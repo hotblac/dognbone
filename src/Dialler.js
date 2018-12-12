@@ -8,32 +8,38 @@ export class Dialler extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            state: 'ready'
+            state: 'Not Ready',
+            token: ''
         };
     }
 
     handleErrors = (response) => {
-        if (!response.ok) {
-            throw new Error(response.statusText)
-        }
-        return response;
+        if (response.ok) return response;
+        else throw new Error(response.statusText);
     };
 
     handleSubmit = () => {
-        fetch('/api/makeCall')
-            .then(result => this.handleErrors(result))
-            .then(result => this.setState({state: 'dialling'}))
-            .catch()
+        fetch('/api/token')
+            .then(response => this.handleErrors(response))
+            .then(response => this.setState({
+                token: response.text(),
+                state: 'Ready'
+            }))
+            .catch(error => {
+                console.log('Request failed', error);
+                this.setState({state: 'Call setup error: ' + error});
+            })
     };
 
     render() {
         return (
-            <div>
+            <div className="field">
                 <button className="button is-success is-rounded" onClick={this.handleSubmit}>
-                    <span class="icon">
+                    <span className="icon">
                         <FontAwesomeIcon icon={faPhone} />
                     </span>
                 </button>
+                <p className="help">{this.state.state}</p>
             </div>
         );
     }

@@ -17,7 +17,8 @@
     "twilio": "^3.25.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server/app.js",
+    "start-frontend": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
