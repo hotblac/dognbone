@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import 'bulma/css/bulma.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPhone } from '@fortawesome/free-solid-svg-icons'
 
 export class Dialler extends Component {
 
@@ -26,7 +29,11 @@ export class Dialler extends Component {
     render() {
         return (
             <div>
-                <button className="button is-primary" onClick={this.handleSubmit}>Dial!</button>
+                <button className="button is-success is-rounded" onClick={this.handleSubmit}>
+                    <span class="icon">
+                        <FontAwesomeIcon icon={faPhone} />
+                    </span>
+                </button>
             </div>
         );
     }
