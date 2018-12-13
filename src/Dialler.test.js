@@ -3,6 +3,8 @@ import { shallow } from 'enzyme';
 import {Dialler} from './Dialler';
 import {Device} from "twilio-client";
 
+const phoneNumber = '07700900000';
+
 // Mock Device behaviours
 Device.setup = jest.fn(token => {});
 Device.connect = jest.fn();
@@ -81,6 +83,44 @@ describe('status', () => {
 
         const status = wrapper.find('#callButtonField p.help');
         expect(status.text()).toBe('Device error');
+    });
+});
+
+describe('phone number input', () => {
+
+    it('should initially be empty', () => {
+        const wrapper = shallow(<Dialler/>);
+        const input = wrapper.find('#phoneNumberField input');
+
+        expect(input.text()).toBe('');
+    });
+
+    it('should update state', () => {
+        const wrapper = shallow(<Dialler/>);
+        const input = wrapper.find('#phoneNumberField input');
+        input.simulate('change', {target: {value: phoneNumber}});
+
+        expect(wrapper.state('number')).toBe(phoneNumber);
+    });
+
+    it('should be passed to Device on connection', () => {
+        const wrapper = shallow(<Dialler/>);
+        const input = wrapper.find('#phoneNumberField input');
+        input.simulate('change', {target: {value: phoneNumber}});
+
+        deviceCallbacks.ready();
+        expect(Device.connect).toBeCalledWith({number: phoneNumber});
+    });
+
+});
+
+describe('device', () => {
+
+    it('should connect the call when ready', () => {
+        const wrapper = shallow(<Dialler/>);
+        deviceCallbacks.ready();
+
+        expect(Device.connect).toBeCalled();
     });
 });
 

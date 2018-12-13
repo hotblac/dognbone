@@ -10,14 +10,15 @@ export class Dialler extends Component {
         super(props);
         this.state = {
             status: '',
-            token: ''
+            number: ''
         };
     }
 
     componentDidMount() {
         Device.on('ready', device => {
             this.setState({status: 'Device ready'});
-            Device.connect({});
+            console.log('Device.connect: number:' + this.state.number);
+            Device.connect({number: this.state.number});
         });
         Device.on('disconnect', connection => {
             this.setState({status: 'Disconnected'});
@@ -33,6 +34,11 @@ export class Dialler extends Component {
         else throw new Error(response.statusText);
     };
 
+    handlePhoneNumberChange = (event) => {
+        const phoneNumber = event.target.value;
+        this.setState({number: phoneNumber});
+    };
+
     handleSubmit = () => {
         fetch('/api/token')
             .then(response => this.handleErrors(response))
@@ -40,7 +46,6 @@ export class Dialler extends Component {
             .then(token => {
                 Device.setup(token);
                 this.setState({
-                    token: token,
                     status: 'Obtained token'
                 });
             })
@@ -53,6 +58,12 @@ export class Dialler extends Component {
     render() {
         return (
             <div>
+                <div id="phoneNumberField" className="field">
+                    <div className="control">
+                        <input type="text" className="input" onChange={this.handlePhoneNumberChange}/>
+                    </div>
+                </div>
+
                 <div id="callButtonField" className="field">
                     <button className="button is-success is-rounded" onClick={this.handleSubmit}>
                         <span className="icon">

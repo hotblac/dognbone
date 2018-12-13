@@ -29,13 +29,14 @@ module.exports = {
 
     /**
      * Create TwiML for the outgoing call.
+     * @param targetNumber number to be called
      * @returns {string} TwiML describing the outgoing call
      */
-    voice: () => {
+    voice: (targetNumber) => {
         const voiceResponse = new VoiceResponse();
         voiceResponse.dial({
             callerId: process.env.TWILIO_NUMBER,
-        }, process.env.TARGET_NUMBER);
+        }, targetNumber);
         return voiceResponse.toString();
     }
 };
