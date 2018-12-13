@@ -1,7 +1,9 @@
 const express = require("express");
+const helmet = require('helmet');
 const twilio = require("./twilio");
 const app = express();
 
+app.use(helmet());
 app.use(express.static('build'));
 app.get("/api/makeCall", (req, res) => {
     twilio.makeCall();
@@ -9,7 +11,8 @@ app.get("/api/makeCall", (req, res) => {
 });
 
 app.get("/api/token", (req, res) => {
-    res.sendStatus(500);
+    const token = twilio.token();
+    res.send(token);
 });
 
 app.get("/api/voice", (req, res) => {

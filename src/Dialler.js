@@ -8,7 +8,7 @@ export class Dialler extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            state: 'Not Ready',
+            state: '',
             token: ''
         };
     }
@@ -21,9 +21,10 @@ export class Dialler extends Component {
     handleSubmit = () => {
         fetch('/api/token')
             .then(response => this.handleErrors(response))
-            .then(response => this.setState({
-                token: response.text(),
-                state: 'Ready'
+            .then(response => response.text())
+            .then(token => this.setState({
+                token: token,
+                state: 'Obtained token'
             }))
             .catch(error => {
                 console.log('Request failed', error);
