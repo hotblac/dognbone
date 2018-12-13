@@ -16,7 +16,7 @@ export class Dialler extends Component {
 
     componentDidMount() {
         Device.on('ready', device => {
-            this.setState({status: 'Ready'});
+            this.setState({status: 'Device ready'});
             Device.connect({});
         });
         Device.on('disconnect', connection => {
@@ -52,13 +52,15 @@ export class Dialler extends Component {
 
     render() {
         return (
-            <div className="field">
-                <button className="button is-success is-rounded" onClick={this.handleSubmit}>
-                    <span className="icon">
-                        <FontAwesomeIcon icon={faPhone} />
-                    </span>
-                </button>
-                <p className="help">{this.state.status}</p>
+            <div>
+                <div id="callButtonField" className="field">
+                    <button className="button is-success is-rounded" onClick={this.handleSubmit}>
+                        <span className="icon">
+                            <FontAwesomeIcon icon={faPhone} />
+                        </span>
+                    </button>
+                    <p className="help">{this.state.status}</p>
+                </div>
             </div>
         );
     }

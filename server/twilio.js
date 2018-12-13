@@ -10,20 +10,6 @@ const VoiceResponse = twilio.twiml.VoiceResponse;
 module.exports = {
 
     /**
-     * Place a call to the TARGET_NUMBER
-     */
-    makeCall: () => {
-        client.calls
-            .create({
-                url: 'http://demo.twilio.com/docs/voice.xml',
-                to: process.env.TARGET_NUMBER,
-                from: process.env.TWILIO_NUMBER
-            })
-            .then(call => console.log(call.sid))
-            .done();
-    },
-
-    /**
      * Obtain a token with outgoing call capability
      * @returns {string} token
      */

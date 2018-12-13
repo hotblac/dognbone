@@ -5,10 +5,6 @@ const app = express();
 
 app.use(helmet());
 app.use(express.static('build'));
-app.get("/api/makeCall", (req, res) => {
-    twilio.makeCall();
-    res.sendStatus(200);
-});
 
 app.get("/api/token", (req, res) => {
     const token = twilio.token();
