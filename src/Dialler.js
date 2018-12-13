@@ -20,6 +20,9 @@ export class Dialler extends Component {
             console.log('Device.connect: number:' + this.state.number);
             Device.connect({number: this.state.number});
         });
+        Device.on('connect', connection => {
+            this.setState({status: 'Connected'});
+        });
         Device.on('disconnect', connection => {
             this.setState({status: 'Disconnected'});
         });

@@ -69,6 +69,14 @@ describe('status', () => {
         expect(status.text()).toBe('Device ready');
     });
 
+    it('should change on connect', () => {
+        const wrapper = shallow(<Dialler/>);
+        deviceCallbacks.connect();
+
+        const status = wrapper.find('#callButtonField p.help');
+        expect(status.text()).toBe('Connected');
+    });
+
     it('should change on disconnect', () => {
         const wrapper = shallow(<Dialler/>);
         deviceCallbacks.disconnect();
