@@ -15,8 +15,10 @@ app.get("/api/token", (req, res) => {
     res.send(token);
 });
 
-app.get("/api/voice", (req, res) => {
-    res.sendStatus(500);
+app.post("/api/voice", (req, res) => {
+    const outgoingCallTwiML = twilio.voice();
+    res.type('text/xml');
+    res.send(outgoingCallTwiML);
 });
 
 app.listen(8080, () => {
