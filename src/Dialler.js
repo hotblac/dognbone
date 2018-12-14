@@ -3,6 +3,7 @@ import 'bulma/css/bulma.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPhone } from '@fortawesome/free-solid-svg-icons'
 import {Device} from "twilio-client";
+import { Keypad } from './Keypad';
 
 export class Dialler extends Component {
 
@@ -42,6 +43,13 @@ export class Dialler extends Component {
         this.setState({number: phoneNumber});
     };
 
+    handleKeyPress = (event) => {
+        const keyPressed = event.target.value;
+        this.setState((state, props) => ({
+            number: state.number + keyPressed
+        }));
+    };
+
     handleSubmit = () => {
         fetch('/api/token')
             .then(response => this.handleErrors(response))
@@ -63,9 +71,11 @@ export class Dialler extends Component {
             <div>
                 <div id="phoneNumberField" className="field">
                     <div className="control">
-                        <input type="text" className="input" onChange={this.handlePhoneNumberChange}/>
+                        <input type="text" className="input" value={this.state.number} onChange={this.handlePhoneNumberChange}/>
                     </div>
                 </div>
+
+                <Keypad onChange={this.handleKeyPress}/>
 
                 <div id="callButtonField" className="field">
                     <button className="button is-success is-rounded" onClick={this.handleSubmit}>

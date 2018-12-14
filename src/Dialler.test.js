@@ -1,7 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import {Dialler} from './Dialler';
-import {Device} from "twilio-client";
+import { Dialler } from './Dialler';
+import { Keypad } from './Keypad';
+import { Device } from "twilio-client";
 
 const phoneNumber = '07700900000';
 
@@ -100,7 +101,7 @@ describe('phone number input', () => {
         const wrapper = shallow(<Dialler/>);
         const input = wrapper.find('#phoneNumberField input');
 
-        expect(input.text()).toBe('');
+        expect(input.props().value).toBe('');
     });
 
     it('should update state', () => {
@@ -120,6 +121,26 @@ describe('phone number input', () => {
         expect(Device.connect).toBeCalledWith({number: phoneNumber});
     });
 
+});
+
+describe('keypad', () => {
+
+    it('should be visible', () => {
+        const wrapper = shallow(<Dialler/>);
+        const keypad = wrapper.find(Keypad);
+        expect(keypad.exists()).toBe(true);
+
+    });
+
+    it('should update phone number field', () => {
+        const wrapper = shallow(<Dialler/>);
+        const keypad = wrapper.find(Keypad);
+        keypad.prop('onChange')({target: {value: '#'}});
+        expect(wrapper.state('number')).toBe('#');
+
+        const input = wrapper.find('#phoneNumberField input');
+        expect(input.props().value).toBe('#');
+    });
 });
 
 describe('device', () => {
