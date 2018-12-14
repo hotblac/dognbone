@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import {Dialler} from "./Dialler";
+import 'bulma/css/bulma.css'
 
 class App extends Component {
   render() {

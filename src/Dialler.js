@@ -75,10 +75,12 @@ export class Dialler extends Component {
                     </div>
                 </div>
 
-                <Keypad onChange={this.handleKeyPress}/>
+                <div class="section">
+                    <Keypad onChange={this.handleKeyPress}/>
+                </div>
 
                 <div id="callButtonField" className="field">
-                    <button className="button is-success is-rounded" onClick={this.handleSubmit}>
+                    <button className="button is-success is-rounded is-large" onClick={this.handleSubmit}>
                         <span className="icon">
                             <FontAwesomeIcon icon={faPhone} />
                         </span>
