@@ -70,12 +70,17 @@ export class Dialler extends Component {
         return (
             <div>
                 <div id="phoneNumberField" className="field">
-                    <div className="control">
-                        <input type="text" className="input" value={this.state.number} onChange={this.handlePhoneNumberChange}/>
+                    <div className="control has-icons-left">
+                        <span className="icon is-left">
+                            <FontAwesomeIcon icon={faPhone} />
+                        </span>
+                        <input type="text" className="input is-primary is-rounded"
+                               placeholder="+44"
+                               value={this.state.number} onChange={this.handlePhoneNumberChange}/>
                     </div>
                 </div>
 
-                <div class="section">
+                <div className="section">
                     <Keypad onChange={this.handleKeyPress}/>
                 </div>
 
