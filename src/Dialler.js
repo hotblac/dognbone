@@ -3,6 +3,7 @@ import 'bulma/css/bulma.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPhone } from '@fortawesome/free-solid-svg-icons'
 import {Device} from "twilio-client";
+import { Keypad } from './Keypad';
 
 export class Dialler extends Component {
 
@@ -10,14 +11,18 @@ export class Dialler extends Component {
         super(props);
         this.state = {
             status: '',
-            token: ''
+            number: ''
         };
     }
 
     componentDidMount() {
         Device.on('ready', device => {
             this.setState({status: 'Device ready'});
-            Device.connect({});
+            console.log('Device.connect: number:' + this.state.number);
+            Device.connect({number: this.state.number});
+        });
+        Device.on('connect', connection => {
+            this.setState({status: 'Connected'});
         });
         Device.on('disconnect', connection => {
             this.setState({status: 'Disconnected'});
@@ -33,6 +38,18 @@ export class Dialler extends Component {
         else throw new Error(response.statusText);
     };
 
+    handlePhoneNumberChange = (event) => {
+        const phoneNumber = event.target.value;
+        this.setState({number: phoneNumber});
+    };
+
+    handleKeyPress = (event) => {
+        const keyPressed = event.target.value;
+        this.setState((state, props) => ({
+            number: state.number + keyPressed
+        }));
+    };
+
     handleSubmit = () => {
         fetch('/api/token')
             .then(response => this.handleErrors(response))
@@ -40,7 +57,6 @@ export class Dialler extends Component {
             .then(token => {
                 Device.setup(token);
                 this.setState({
-                    token: token,
                     status: 'Obtained token'
                 });
             })
@@ -53,8 +69,23 @@ export class Dialler extends Component {
     render() {
         return (
             <div>
+                <div id="phoneNumberField" className="field">
+                    <div className="control has-icons-left">
+                        <span className="icon is-left">
+                            <FontAwesomeIcon icon={faPhone} />
+                        </span>
+                        <input type="text" className="input is-primary is-rounded"
+                               placeholder="+44"
+                               value={this.state.number} onChange={this.handlePhoneNumberChange}/>
+                    </div>
+                </div>
+
+                <div className="section">
+                    <Keypad onChange={this.handleKeyPress}/>
+                </div>
+
                 <div id="callButtonField" className="field">
-                    <button className="button is-success is-rounded" onClick={this.handleSubmit}>
+                    <button className="button is-success is-rounded is-large" onClick={this.handleSubmit}>
                         <span className="icon">
                             <FontAwesomeIcon icon={faPhone} />
                         </span>

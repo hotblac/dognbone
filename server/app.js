@@ -4,6 +4,8 @@ const twilio = require("./twilio");
 const app = express();
 
 app.use(helmet());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 app.use(express.static('build'));
 
 app.get("/api/token", (req, res) => {
@@ -12,7 +14,7 @@ app.get("/api/token", (req, res) => {
 });
 
 app.post("/api/voice", (req, res) => {
-    const outgoingCallTwiML = twilio.voice();
+    const outgoingCallTwiML = twilio.voice(req.body.number);
     res.type('text/xml');
     res.send(outgoingCallTwiML);
 });

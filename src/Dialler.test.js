@@ -1,7 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import {Dialler} from './Dialler';
-import {Device} from "twilio-client";
+import { Dialler } from './Dialler';
+import { Keypad } from './Keypad';
+import { Device } from "twilio-client";
+
+const phoneNumber = '07700900000';
 
 // Mock Device behaviours
 Device.setup = jest.fn(token => {});
@@ -67,6 +70,14 @@ describe('status', () => {
         expect(status.text()).toBe('Device ready');
     });
 
+    it('should change on connect', () => {
+        const wrapper = shallow(<Dialler/>);
+        deviceCallbacks.connect();
+
+        const status = wrapper.find('#callButtonField p.help');
+        expect(status.text()).toBe('Connected');
+    });
+
     it('should change on disconnect', () => {
         const wrapper = shallow(<Dialler/>);
         deviceCallbacks.disconnect();
@@ -81,6 +92,64 @@ describe('status', () => {
 
         const status = wrapper.find('#callButtonField p.help');
         expect(status.text()).toBe('Device error');
+    });
+});
+
+describe('phone number input', () => {
+
+    it('should initially be empty', () => {
+        const wrapper = shallow(<Dialler/>);
+        const input = wrapper.find('#phoneNumberField input');
+
+        expect(input.props().value).toBe('');
+    });
+
+    it('should update state', () => {
+        const wrapper = shallow(<Dialler/>);
+        const input = wrapper.find('#phoneNumberField input');
+        input.simulate('change', {target: {value: phoneNumber}});
+
+        expect(wrapper.state('number')).toBe(phoneNumber);
+    });
+
+    it('should be passed to Device on connection', () => {
+        const wrapper = shallow(<Dialler/>);
+        const input = wrapper.find('#phoneNumberField input');
+        input.simulate('change', {target: {value: phoneNumber}});
+
+        deviceCallbacks.ready();
+        expect(Device.connect).toBeCalledWith({number: phoneNumber});
+    });
+
+});
+
+describe('keypad', () => {
+
+    it('should be visible', () => {
+        const wrapper = shallow(<Dialler/>);
+        const keypad = wrapper.find(Keypad);
+        expect(keypad.exists()).toBe(true);
+
+    });
+
+    it('should update phone number field', () => {
+        const wrapper = shallow(<Dialler/>);
+        const keypad = wrapper.find(Keypad);
+        keypad.prop('onChange')({target: {value: '#'}});
+        expect(wrapper.state('number')).toBe('#');
+
+        const input = wrapper.find('#phoneNumberField input');
+        expect(input.props().value).toBe('#');
+    });
+});
+
+describe('device', () => {
+
+    it('should connect the call when ready', () => {
+        const wrapper = shallow(<Dialler/>);
+        deviceCallbacks.ready();
+
+        expect(Device.connect).toBeCalled();
     });
 });
 
