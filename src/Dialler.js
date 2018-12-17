@@ -85,7 +85,8 @@ export class Dialler extends Component {
                 </div>
 
                 <div id="callButtonField" className="field">
-                    <button className="button is-success is-rounded is-large" onClick={this.handleSubmit}>
+                    <button className={'button is-rounded is-large ' + (this.state.status === 'Connected' ? 'is-danger' : 'is-success')}
+                            onClick={this.handleSubmit}>
                         <span className="icon">
                             <FontAwesomeIcon icon={faPhone} />
                         </span>
