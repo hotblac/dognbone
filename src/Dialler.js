@@ -10,6 +10,7 @@ export class Dialler extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            callIsActive: false,
             status: '',
             number: ''
         };
@@ -17,19 +18,31 @@ export class Dialler extends Component {
 
     componentDidMount() {
         Device.on('ready', device => {
-            this.setState({status: 'Device ready'});
+            this.setState({
+                callIsActive: false,
+                status: 'Device ready'
+            });
             console.log('Device.connect: number:' + this.state.number);
             Device.connect({number: this.state.number});
         });
         Device.on('connect', connection => {
-            this.setState({status: 'Connected'});
+            this.setState({
+                callIsActive: true,
+                status: 'Connected'
+            });
         });
         Device.on('disconnect', connection => {
-            this.setState({status: 'Disconnected'});
+            this.setState({
+                callIsActive: false,
+                status: 'Disconnected'
+            });
         });
         Device.on('error', error => {
             console.log("Device error: ", error.code, error.message);
-            this.setState({status: 'Device error'});
+            this.setState({
+                callIsActive: false,
+                status: 'Device error'
+            });
         });
     }
 
@@ -50,7 +63,12 @@ export class Dialler extends Component {
         }));
     };
 
-    handleSubmit = () => {
+    handleCallButtonClick = () => {
+        if (this.state.callIsActive) this.endCall();
+        else this.initiateCall();
+    };
+
+    initiateCall = () => {
         fetch('/api/token')
             .then(response => this.handleErrors(response))
             .then(response => response.text())
@@ -63,7 +81,12 @@ export class Dialler extends Component {
             .catch(error => {
                 console.log('Request failed', error);
                 this.setState({status: 'Call setup error: ' + error});
-            })
+            });
+    };
+
+    endCall = () => {
+        console.log('Device.disconnectAll');
+        Device.disconnectAll();
     };
 
     render() {
@@ -85,8 +108,8 @@ export class Dialler extends Component {
                 </div>
 
                 <div id="callButtonField" className="field">
-                    <button className={'button is-rounded is-large ' + (this.state.status === 'Connected' ? 'is-danger' : 'is-success')}
-                            onClick={this.handleSubmit}>
+                    <button className={'button is-rounded is-large ' + (this.state.callIsActive ? 'is-danger' : 'is-success')}
+                            onClick={this.handleCallButtonClick}>
                         <span className="icon">
                             <FontAwesomeIcon icon={faPhone} />
                         </span>

@@ -9,6 +9,7 @@ const phoneNumber = '07700900000';
 // Mock Device behaviours
 Device.setup = jest.fn(token => {});
 Device.connect = jest.fn();
+Device.disconnectAll = jest.fn();
 
 // Capture Device event registrations so we can trigger them from tests
 const deviceCallbacks = {};
@@ -25,12 +26,39 @@ beforeEach(() => {
 
 describe('call button', () => {
 
-    it('should setup device', async () => {
+    it('should be green when call is inactive', () => {
         const wrapper = shallow(<Dialler/>);
+        wrapper.setState({callIsActive: false});
+
+        const button = wrapper.find('#callButtonField button');
+        expect(button.hasClass('is-success')).toBe(true);
+        expect(button.hasClass('is-danger')).toBe(false);
+    });
+
+    it('should be red when call is active', () => {
+        const wrapper = shallow(<Dialler/>);
+        wrapper.setState({callIsActive: true});
+
+        const button = wrapper.find('#callButtonField button');
+        expect(button.hasClass('is-success')).toBe(false);
+        expect(button.hasClass('is-danger')).toBe(true);
+    });
+
+    it('should setup device on click when call is inactive', async () => {
+        const wrapper = shallow(<Dialler/>);
+        wrapper.setState({callIsActive: false});
         await clickCallButton(wrapper);
 
         expect(fetch.mock.calls[0][0]).toBe('/api/token');
         expect(Device.setup).toBeCalledWith(token);
+    });
+
+    it('should end call on click when call is active', async () => {
+        const wrapper = shallow(<Dialler/>);
+        wrapper.setState({callIsActive: true});
+        await clickCallButton(wrapper);
+
+        expect(Device.disconnectAll).toBeCalled();
     });
 });
 
@@ -157,10 +185,6 @@ async function clickCallButton(wrapper) {
     const button = wrapper.find('#callButtonField button');
     button.simulate('click');
     await flushPromises();
-}
-
-async function fireDeviceEvent(event) {
-    Device.simulate()
 }
 
 function flushPromises() {
