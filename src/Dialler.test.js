@@ -10,17 +10,10 @@ const phoneNumber = '07700900000';
 Device.connect = jest.fn();
 Device.disconnectAll = jest.fn();
 
-// Capture Device event registrations so we can trigger them from tests
-const deviceCallbacks = {};
-Device.on = jest.fn((event, callback) => {
-    deviceCallbacks[event] = callback;
-});
-
 describe('call button', () => {
 
     it('should be green when call is inactive', () => {
-        const wrapper = shallow(<Dialler/>);
-        wrapper.setState({callIsActive: false});
+        const wrapper = shallow(<Dialler deviceState='ready'/>);
 
         const button = wrapper.find('#callButtonField button');
         expect(button.hasClass('is-success')).toBe(true);
@@ -28,7 +21,7 @@ describe('call button', () => {
     });
 
     it('should be red when call is active', () => {
-        const wrapper = shallow(<Dialler/>);
+        const wrapper = shallow(<Dialler deviceState='connect'/>);
         wrapper.setState({callIsActive: true});
 
         const button = wrapper.find('#callButtonField button');
@@ -37,7 +30,7 @@ describe('call button', () => {
     });
 
     it('should start call on click when call is inactive', async () => {
-        const wrapper = shallow(<Dialler/>);
+        const wrapper = shallow(<Dialler deviceState='ready'/>);
         wrapper.setState({callIsActive: false});
         await clickCallButton(wrapper);
 
@@ -45,7 +38,7 @@ describe('call button', () => {
     });
 
     it('should end call on click when call is active', async () => {
-        const wrapper = shallow(<Dialler/>);
+        const wrapper = shallow(<Dialler deviceState='connect'/>);
         wrapper.setState({callIsActive: true});
         await clickCallButton(wrapper);
 
@@ -53,7 +46,7 @@ describe('call button', () => {
     });
 });
 
-describe('status', () => {
+describe('call status', () => {
 
     it('should initially be empty', () => {
         const wrapper = shallow(<Dialler/>);
@@ -62,33 +55,25 @@ describe('status', () => {
     });
 
     it('should change on device ready', () => {
-        const wrapper = shallow(<Dialler/>);
-        deviceCallbacks.ready();
-
+        const wrapper = shallow(<Dialler deviceState={'ready'}/>);
         const status = wrapper.find('#callButtonField p.help');
         expect(status.text()).toBe('Device ready');
     });
 
     it('should change on connect', () => {
-        const wrapper = shallow(<Dialler/>);
-        deviceCallbacks.connect();
-
+        const wrapper = shallow(<Dialler deviceState={'connect'}/>);
         const status = wrapper.find('#callButtonField p.help');
         expect(status.text()).toBe('Connected');
     });
 
     it('should change on disconnect', () => {
-        const wrapper = shallow(<Dialler/>);
-        deviceCallbacks.disconnect();
-
+        const wrapper = shallow(<Dialler deviceState={'disconnect'}/>);
         const status = wrapper.find('#callButtonField p.help');
         expect(status.text()).toBe('Disconnected');
     });
 
     it('should change on device error', () => {
-        const wrapper = shallow(<Dialler/>);
-        deviceCallbacks.error({code:'', message:''});
-
+        const wrapper = shallow(<Dialler deviceState={'error'}/>);
         const status = wrapper.find('#callButtonField p.help');
         expect(status.text()).toBe('Device error');
     });

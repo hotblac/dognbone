@@ -10,44 +10,9 @@ export class Dialler extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            callIsActive: false,
-            status: '',
             number: ''
         };
     }
-
-    componentDidMount() {
-        Device.on('ready', device => {
-            this.setState({
-                callIsActive: false,
-                status: 'Device ready'
-            });
-        });
-        Device.on('connect', connection => {
-            this.setState({
-                callIsActive: true,
-                status: 'Connected'
-            });
-        });
-        Device.on('disconnect', connection => {
-            this.setState({
-                callIsActive: false,
-                status: 'Disconnected'
-            });
-        });
-        Device.on('error', error => {
-            console.log("Device error: ", error.code, error.message);
-            this.setState({
-                callIsActive: false,
-                status: 'Device error'
-            });
-        });
-    }
-
-    handleErrors = (response) => {
-        if (response.ok) return response;
-        else throw new Error(response.statusText);
-    };
 
     handlePhoneNumberChange = (event) => {
         const phoneNumber = event.target.value;
@@ -62,7 +27,7 @@ export class Dialler extends Component {
     };
 
     handleCallButtonClick = () => {
-        if (this.state.callIsActive) this.endCall();
+        if (this.callIsActive()) this.endCall();
         else this.initiateCall();
     };
 
@@ -74,6 +39,20 @@ export class Dialler extends Component {
     endCall = () => {
         console.log('Device.disconnectAll');
         Device.disconnectAll();
+    };
+
+    callStatus = () => {
+        switch(this.props.deviceState) {
+            case 'ready': return 'Device ready';
+            case 'connect': return 'Connected';
+            case 'disconnect': return 'Disconnected';
+            case 'error': return 'Device error';
+            default: return '';
+        }
+    };
+
+    callIsActive = () => {
+        return this.props.deviceState === 'connect';
     };
 
     render() {
@@ -95,13 +74,13 @@ export class Dialler extends Component {
                 </div>
 
                 <div id="callButtonField" className="field">
-                    <button className={'button is-rounded is-large ' + (this.state.callIsActive ? 'is-danger' : 'is-success')}
+                    <button className={'button is-rounded is-large ' + (this.callIsActive() ? 'is-danger' : 'is-success')}
                             onClick={this.handleCallButtonClick}>
                         <span className="icon">
                             <FontAwesomeIcon icon={faPhone} />
                         </span>
                     </button>
-                    <p className="help">{this.state.status}</p>
+                    <p className="help">{this.callStatus()}</p>
                 </div>
             </div>
         );

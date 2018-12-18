@@ -13,19 +13,36 @@ class App extends Component {
         super(props);
         this.state = {
             token: '',
+            deviceState: '',
             deviceErrorCode: '',
             deviceErrorMessage: ''
         };
     }
 
-    componentDidMount() {
-        Device.on('error', error => {
-            console.log("Device error: ", error.code, error.message);
-            this.setState({
-                deviceErrorCode: error.code,
-                deviceErrorMessage: error.message
-            });
+    captureDeviceStateChange = (state) => {
+        Device.on(state, obj => {
+            if (state === 'error') {
+                this.setState({
+                    deviceState: 'error',
+                    deviceErrorCode: obj.code,
+                    deviceErrorMessage: obj.message
+                });
+            } else {
+                this.setState({
+                    deviceState: state
+                });
+            }
         });
+    };
+
+    componentDidMount() {
+        this.captureDeviceStateChange('cancel');
+        this.captureDeviceStateChange('connect');
+        this.captureDeviceStateChange('disconnect');
+        this.captureDeviceStateChange('error');
+        this.captureDeviceStateChange('incoming');
+        this.captureDeviceStateChange('offline');
+        this.captureDeviceStateChange('ready');
     }
 
     handleNotificationDismiss = () => {
@@ -62,7 +79,7 @@ class App extends Component {
                                 <figure className="avatar is-dark">
                                     <FontAwesomeIcon icon={faBone} size="6x" className="has-text-grey"/>
                                 </figure>
-                                <Dialler/>
+                                <Dialler deviceState={this.state.deviceState}/>
                             </div>
                         </div>
                     </div>
