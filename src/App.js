@@ -15,6 +15,10 @@ class App extends Component {
         };
     }
 
+    onLogin = (capabilityToken) => {
+        this.setState({token: capabilityToken});
+    };
+
     render() {
         return (
             <div>
@@ -36,7 +40,7 @@ class App extends Component {
                         </div>
                     </div>
                 </section>
-                <LoginModal visible={!this.state.token}/>
+                <LoginModal visible={!this.state.token} onLogin={this.onLogin}/>
             </div>
         );
     }

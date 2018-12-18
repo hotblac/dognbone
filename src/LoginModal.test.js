@@ -1,6 +1,26 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { LoginModal } from './LoginModal';
+import * as api from "./CapabilityToken.api";
+
+const validAccountSid = 'ACffffffffffffffffffffffffffffffff';
+const validAuthToken = 'ffffffffffffffffffffffffffffffff';
+const incorrectAuthToken = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz';
+
+// Mock API behaviour
+const mockCapabilityToken = 'MOCK_CAPABILITY_TOKEN';
+api.capabilityToken = jest.fn((accountSid, authToken) => {
+    if (accountSid === validAccountSid && authToken === validAuthToken) {
+        return Promise.resolve(mockCapabilityToken);
+    } else {
+        return Promise.reject(new Error('Incorrect auth token'));
+    }
+});
+
+const onLogin = jest.fn();
+beforeEach(() => {
+    onLogin.mockReset();
+});
 
 describe('login modal', () => {
 
@@ -19,9 +39,6 @@ describe('login modal', () => {
 
 describe('form validation', () => {
 
-    const validAccountSid = 'ACffffffffffffffffffffffffffffffff';
-    const validAuthToken = 'ffffffffffffffffffffffffffffffff';
-
     it('should show no errors on initial form', () => {
         const wrapper = shallow(<LoginModal/>);
 
@@ -38,7 +55,7 @@ describe('form validation', () => {
 
     it('should show error on blank account SID', () => {
         const wrapper = shallow(<LoginModal/>);
-        submitForm(wrapper, '',validAuthToken);
+        submitForm(wrapper, '', validAuthToken);
 
         const accountSidInput = wrapper.find('#accountSidField input');
         const accountSidValidationHelp = wrapper.find('#accountSidField .help');
@@ -58,7 +75,7 @@ describe('form validation', () => {
 
     it('should show no errors on valid input', () => {
         const wrapper = shallow(<LoginModal/>);
-        submitForm(wrapper, validAccountSid,validAuthToken);
+        submitForm(wrapper, validAccountSid, validAuthToken);
 
         const accountSidInput = wrapper.find('#accountSidField input');
         const accountSidValidationHelp = wrapper.find('#accountSidField .help');
@@ -72,6 +89,30 @@ describe('form validation', () => {
     });
 });
 
+describe('form submit', () => {
+
+    it('should reject invalid input', async () => {
+        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
+        await submitFormAndUpdate(wrapper, '', '');
+        expect(onLogin).not.toBeCalled();
+    });
+
+    it('should return capability token to caller', async () => {
+        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
+        await submitFormAndUpdate(wrapper, validAccountSid, validAuthToken);
+        expect(onLogin).toBeCalledWith(mockCapabilityToken);
+    });
+
+    it('should display error on auth failure', async () => {
+        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
+        expect(wrapper.find('.notification').exists()).toBe(false);
+
+        await submitFormAndUpdate(wrapper, validAccountSid, incorrectAuthToken);
+        expect(onLogin).not.toBeCalled();
+        expect(wrapper.find('.notification').exists()).toBe(true);
+    });
+});
+
 function submitForm(wrapper, accountSid, authToken) {
     const accountSidInput = wrapper.find('#accountSidField input');
     const authTokenInput = wrapper.find('#authTokenField input');
@@ -80,6 +121,11 @@ function submitForm(wrapper, accountSid, authToken) {
     accountSidInput.simulate('change', stubEvent(accountSidInput, accountSid));
     authTokenInput.simulate('change', stubEvent(authTokenInput, authToken));
     button.simulate('click');
+}
+
+async function submitFormAndUpdate(wrapper, accountSid, authToken) {
+    submitForm(wrapper, accountSid, authToken);
+    await flushPromises();
 }
 
 /**
@@ -94,4 +140,8 @@ function stubEvent(node, value) {
             name: name,
             value: value
         }};
+}
+
+function flushPromises() {
+    return new Promise(resolve => setImmediate(resolve));
 }

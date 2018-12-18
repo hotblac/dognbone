@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import 'bulma/css/bulma.css'
+import * as api from "./CapabilityToken.api";
 
 export class LoginModal extends Component {
 
@@ -9,7 +10,8 @@ export class LoginModal extends Component {
             accountSid: '',
             accountSidValidationError: '',
             authToken: '',
-            authTokenValidationError: ''
+            authTokenValidationError: '',
+            tokenRequestError: ''
         };
     }
 
@@ -44,7 +46,22 @@ export class LoginModal extends Component {
     };
 
     handleSubmit = () => {
-        this.validateForm();
+        if (this.validateForm()) {
+            api.capabilityToken(this.state.accountSid, this.state.authToken)
+                .then(capabilityToken => {
+                    console.log('Obtained token: ' + capabilityToken);
+                    this.props.onLogin(capabilityToken);
+                })
+                .catch(error => {
+                    console.log('Request failed', error);
+                    this.setState({tokenRequestError: error.toString()});
+                });
+        }
+    };
+
+    handleErrors = (response) => {
+        if (response.ok) return response;
+        else throw new Error(response.statusText);
     };
 
     render() {
@@ -56,6 +73,11 @@ export class LoginModal extends Component {
                         <p className="modal-card-title">Login to Twilio</p>
                     </header>
                     <section className="modal-card-body">
+                        {this.state.tokenRequestError &&
+                        <div className="notification is-danger">
+                            {this.state.tokenRequestError}
+                        </div>
+                        }
                         <p className="level">Login with your Twilio Account SID.</p>
                         <div id="accountSidField" className="field is-horizontal">
                             <label className="field-label">Account SID</label>
