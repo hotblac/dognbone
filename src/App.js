@@ -1,11 +1,20 @@
 import React, { Component } from 'react';
-import {Dialler} from "./Dialler";
+import { Dialler } from "./Dialler";
+import { LoginModal } from "./LoginModal";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBone} from '@fortawesome/free-solid-svg-icons'
 import 'bulma/css/bulma.css'
 import './App.css';
 
 class App extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            token: ''
+        };
+    }
+
     render() {
         return (
             <div>
@@ -27,6 +36,7 @@ class App extends Component {
                         </div>
                     </div>
                 </section>
+                <LoginModal visible={!this.state.token}/>
             </div>
         );
     }
