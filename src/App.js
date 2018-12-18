@@ -12,11 +12,30 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            token: ''
+            token: '',
+            deviceErrorCode: '',
+            deviceErrorMessage: ''
         };
     }
 
-    onLogin = (capabilityToken) => {
+    componentDidMount() {
+        Device.on('error', error => {
+            console.log("Device error: ", error.code, error.message);
+            this.setState({
+                deviceErrorCode: error.code,
+                deviceErrorMessage: error.message
+            });
+        });
+    }
+
+    handleNotificationDismiss = () => {
+        this.setState({
+            deviceErrorCode: '',
+            deviceErrorMessage: ''
+        })
+    };
+
+    handleLogin = (capabilityToken) => {
         this.setState({token: capabilityToken});
         Device.setup(capabilityToken);
     };
@@ -31,6 +50,12 @@ class App extends Component {
                     </div>
                 </section>
                 <section className="section has-background-light">
+                    {(this.state.deviceErrorCode || this.state.deviceErrorMessage) &&
+                    <div className="notification is-danger">
+                        <button className="delete" onClick={this.handleNotificationDismiss}/>
+                        Device error {this.state.deviceErrorCode}: {this.state.deviceErrorMessage}
+                    </div>
+                    }
                     <div className="container has-text-centered">
                         <div className="columns is-centered is-mobile">
                             <div className="column box is-narrow" style={{width: '300px'}}>
@@ -42,7 +67,7 @@ class App extends Component {
                         </div>
                     </div>
                 </section>
-                <LoginModal visible={!this.state.token} onLogin={this.onLogin}/>
+                <LoginModal visible={!this.state.token} onLogin={this.handleLogin}/>
             </div>
         );
     }
