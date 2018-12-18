@@ -8,9 +8,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('build'));
 
-app.get("/api/token", (req, res) => {
-    const token = twilio.token();
-    res.send(token);
+app.post("/api/token", (req, res) => {
+    const accountSid = req.body.accountSid;
+    const authToken = req.body.authToken;
+    console.log('Requesting capability token for account SID: ' + accountSid);
+    const capabilityToken = twilio.token(accountSid, authToken);
+    console.log('Capability token: ' + capabilityToken);
+    res.send(capabilityToken);
 });
 
 app.post("/api/voice", (req, res) => {
