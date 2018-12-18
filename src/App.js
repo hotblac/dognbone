@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBone} from '@fortawesome/free-solid-svg-icons'
 import 'bulma/css/bulma.css'
 import './App.css';
+import {Device} from "twilio-client";
 
 class App extends Component {
 
@@ -17,6 +18,7 @@ class App extends Component {
 
     onLogin = (capabilityToken) => {
         this.setState({token: capabilityToken});
+        Device.setup(capabilityToken);
     };
 
     render() {

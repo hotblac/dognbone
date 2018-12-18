@@ -7,7 +7,6 @@ import { Device } from "twilio-client";
 const phoneNumber = '07700900000';
 
 // Mock Device behaviours
-Device.setup = jest.fn(token => {});
 Device.connect = jest.fn();
 Device.disconnectAll = jest.fn();
 
@@ -15,13 +14,6 @@ Device.disconnectAll = jest.fn();
 const deviceCallbacks = {};
 Device.on = jest.fn((event, callback) => {
     deviceCallbacks[event] = callback;
-});
-
-// Mock API behaviour
-const token = 'MOCKTOKEN';
-beforeEach(() => {
-    fetch.resetMocks();
-    fetch.mockResponseOnce(token);
 });
 
 describe('call button', () => {
@@ -44,13 +36,12 @@ describe('call button', () => {
         expect(button.hasClass('is-danger')).toBe(true);
     });
 
-    it('should setup device on click when call is inactive', async () => {
+    it('should start call on click when call is inactive', async () => {
         const wrapper = shallow(<Dialler/>);
         wrapper.setState({callIsActive: false});
         await clickCallButton(wrapper);
 
-        expect(fetch.mock.calls[0][0]).toBe('/api/token');
-        expect(Device.setup).toBeCalledWith(token);
+        expect(Device.connect).toBeCalled();
     });
 
     it('should end call on click when call is active', async () => {
@@ -68,26 +59,6 @@ describe('status', () => {
         const wrapper = shallow(<Dialler/>);
         const status = wrapper.find('#callButtonField p.help');
         expect(status.text()).toBe('');
-    });
-
-    it('should change on token response success', async () => {
-        const wrapper = shallow(<Dialler/>);
-        await clickCallButton(wrapper);
-
-        const status = wrapper.find('#callButtonField p.help');
-        expect(status.text()).toBe('Obtained token');
-    });
-
-    it('should change on token response error', async () => {
-        const errorMessage = 'Simulated API failure';
-        fetch.resetMocks();
-        fetch.mockReject(new Error(errorMessage));
-
-        const wrapper = shallow(<Dialler/>);
-        await clickCallButton(wrapper);
-
-        const status = wrapper.find('#callButtonField p.help');
-        expect(status.text()).toBe('Call setup error: Error: ' + errorMessage);
     });
 
     it('should change on device ready', () => {
@@ -140,12 +111,12 @@ describe('phone number input', () => {
         expect(wrapper.state('number')).toBe(phoneNumber);
     });
 
-    it('should be passed to Device on connection', () => {
+    it('should be passed to Device on connection', async () => {
         const wrapper = shallow(<Dialler/>);
         const input = wrapper.find('#phoneNumberField input');
         input.simulate('change', {target: {value: phoneNumber}});
 
-        deviceCallbacks.ready();
+        await clickCallButton(wrapper);
         expect(Device.connect).toBeCalledWith({number: phoneNumber});
     });
 
@@ -168,16 +139,6 @@ describe('keypad', () => {
 
         const input = wrapper.find('#phoneNumberField input');
         expect(input.props().value).toBe('#');
-    });
-});
-
-describe('device', () => {
-
-    it('should connect the call when ready', () => {
-        const wrapper = shallow(<Dialler/>);
-        deviceCallbacks.ready();
-
-        expect(Device.connect).toBeCalled();
     });
 });
 

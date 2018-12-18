@@ -22,8 +22,6 @@ export class Dialler extends Component {
                 callIsActive: false,
                 status: 'Device ready'
             });
-            console.log('Device.connect: number:' + this.state.number);
-            Device.connect({number: this.state.number});
         });
         Device.on('connect', connection => {
             this.setState({
@@ -69,19 +67,8 @@ export class Dialler extends Component {
     };
 
     initiateCall = () => {
-        fetch('/api/token')
-            .then(response => this.handleErrors(response))
-            .then(response => response.text())
-            .then(token => {
-                Device.setup(token);
-                this.setState({
-                    status: 'Obtained token'
-                });
-            })
-            .catch(error => {
-                console.log('Request failed', error);
-                this.setState({status: 'Call setup error: ' + error});
-            });
+        console.log('Device.connect: number:' + this.state.number);
+        Device.connect({number: this.state.number});
     };
 
     endCall = () => {

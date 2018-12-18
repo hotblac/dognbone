@@ -1,6 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import App from './App';
+import { Device } from "twilio-client";
+
+const capabilityToken = 'a_valid_token';
+
+// Mock Device behaviours
+Device.setup = jest.fn(token => {});
 
 it('renders without crashing', () => {
   const app = shallow(<App/>);
@@ -17,6 +23,14 @@ it('should show login modal when auth token is missing', () => {
 it('should hide login modal on successful login', () => {
   const app = shallow(<App/>);
   const loginModal = app.find('LoginModal');
-  loginModal.prop('onLogin')('a_valid_token');
+
+  loginModal.prop('onLogin')(capabilityToken);
   expect(app.find('LoginModal').props().visible).toBe(false);
+});
+
+it('should initialize device on successful login', () => {
+  const app = shallow(<App/>);
+  const loginModal = app.find('LoginModal');
+  loginModal.prop('onLogin')(capabilityToken);
+  expect(Device.setup).toBeCalledWith(capabilityToken);
 });
