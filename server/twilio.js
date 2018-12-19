@@ -1,9 +1,6 @@
 require('dotenv-safe').load();
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilio = require('twilio');
-const client = twilio(accountSid, authToken);
 const ClientCapability = twilio.jwt.ClientCapability;
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
@@ -13,10 +10,10 @@ module.exports = {
      * Obtain a token with outgoing call capability
      * @returns {string} token
      */
-    token: () => {
+    token: (accountSid, authToken) => {
         const capability = new ClientCapability({
-            accountSid: process.env.TWILIO_ACCOUNT_SID,
-            authToken: process.env.TWILIO_AUTH_TOKEN
+            accountSid: accountSid,
+            authToken: authToken
         });
 
         capability.addScope(
