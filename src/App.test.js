@@ -23,9 +23,7 @@ describe('login modal', () => {
 
   it('should be visible when auth token is missing', () => {
     const app = shallow(<App/>);
-
-    const loginModal = app.find('LoginModal');
-    expect(loginModal.props().visible).toBe(true);
+    expect(app.find('LoginModal').props().visible).toBe(true);
   });
 
   it('should be hidden on successful login', () => {
@@ -34,6 +32,26 @@ describe('login modal', () => {
 
     loginModal.prop('onLogin')(capabilityToken);
     expect(app.find('LoginModal').props().visible).toBe(false);
+  });
+
+  /*
+   * Incorrect login credentials will result in a valid capability
+   * token being returned. However, the Device will have state 'offline'
+   * on initialisation with this token.
+   * When device state is offline, assume that the cause was incorrect
+   * login creds and show the login modal again.
+   */
+  it('should be visible when device is offline', () => {
+      const app = shallow(<App/>);
+      const loginModal = app.find('LoginModal');
+
+      // Capability token is returned by login modal
+      loginModal.prop('onLogin')(capabilityToken);
+
+      // Device immediately fires 'offline' event due to incorrect credentials
+      deviceCallbacks.offline();
+
+      expect(app.find('LoginModal').props().visible).toBe(true);
   });
 });
 
@@ -59,15 +77,17 @@ describe('error notification', () => {
   });
 });
 
-describe('device status', () => {
+describe('device', () => {
 
-  // TODO remove
-  it('should initialize on successful login', () => {
-    const app = shallow(<App/>);
-    const loginModal = app.find('LoginModal');
-    loginModal.prop('onLogin')(capabilityToken);
-    expect(Device.setup).toBeCalledWith(capabilityToken);
-  });
+    it('should initialize on successful login', () => {
+        const app = shallow(<App/>);
+        const loginModal = app.find('LoginModal');
+        loginModal.prop('onLogin')(capabilityToken);
+        expect(Device.setup).toBeCalledWith(capabilityToken);
+    });
+});
+
+describe('device status', () => {
 
   it('should initially be empty', () => {
     const app = shallow(<App/>);

@@ -111,6 +111,26 @@ describe('form submit', () => {
         expect(onLogin).not.toBeCalled();
         expect(wrapper.find('.notification').exists()).toBe(true);
     });
+
+    /*
+     * Incorrect credentials do not result in a failure to obtain a capability token.
+     * Instead, a capability token is generated that cause the device to fail to
+     * initialise. The device will fire an 'offline' event on initialisation.
+     * When device status is offline, assume it was due to invalid credentials and
+     * show the auth failure notification.
+     */
+    it('should display error on device offline', async () => {
+        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
+        expect(wrapper.find('.notification').exists()).toBe(false);
+
+        // User logs in
+        await submitFormAndUpdate(wrapper, validAccountSid, validAuthToken);
+
+        // Device is initialised and immediately becomes offline
+        wrapper.setProps({deviceState: 'offline'});
+
+        expect(wrapper.find('.notification').exists()).toBe(true);
+    });
 });
 
 function submitForm(wrapper, accountSid, authToken) {

@@ -57,6 +57,18 @@ class App extends Component {
         Device.setup(capabilityToken);
     };
 
+    /**
+     * Show login modal if user has not logged in yet OR if given login
+     * credentials were incorrect.
+     * Incorrect login credentials result in a valid login token being returned
+     * but the device will fail to initialize and show offline status.
+     *
+     * @returns {boolean}
+     */
+    isLoginModalVisible = () => {
+        return !this.state.token || this.state.deviceState === 'offline';
+    };
+
     render() {
         return (
             <div>
@@ -84,7 +96,7 @@ class App extends Component {
                         </div>
                     </div>
                 </section>
-                <LoginModal visible={!this.state.token} onLogin={this.handleLogin}/>
+                <LoginModal visible={this.isLoginModalVisible()} deviceState={this.state.deviceState} onLogin={this.handleLogin}/>
             </div>
         );
     }

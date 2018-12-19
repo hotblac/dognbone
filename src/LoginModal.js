@@ -64,6 +64,16 @@ export class LoginModal extends Component {
         else throw new Error(response.statusText);
     };
 
+    loginFailureMessage = () => {
+        // Login failure will be caused either by failure of token API...
+        if (this.state.tokenRequestError) return this.state.tokenRequestError;
+
+        // ...or by resulting token failing to initialise the Device.
+        else if (this.props.deviceState === 'offline') return "Failed to initialise device with given credentials. Please check and try again.";
+
+        else return '';
+    };
+
     render() {
         return (
             <div className={'modal ' + (this.props.visible ? 'is-active' : '')}>
@@ -73,9 +83,9 @@ export class LoginModal extends Component {
                         <p className="modal-card-title">Login to Twilio</p>
                     </header>
                     <section className="modal-card-body">
-                        {this.state.tokenRequestError &&
+                        {this.loginFailureMessage() &&
                         <div className="notification is-danger">
-                            {this.state.tokenRequestError}
+                            {this.loginFailureMessage()}
                         </div>
                         }
                         <p className="level">Login with your Twilio Account SID.</p>
