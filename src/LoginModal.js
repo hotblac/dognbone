@@ -59,11 +59,6 @@ export class LoginModal extends Component {
         }
     };
 
-    handleErrors = (response) => {
-        if (response.ok) return response;
-        else throw new Error(response.statusText);
-    };
-
     loginFailureMessage = () => {
         // Login failure will be caused either by failure of token API...
         if (this.state.tokenRequestError) return this.state.tokenRequestError;
