@@ -29,8 +29,8 @@ describe('keypad', () => {
 
         for (let digit of allButtons) {
             const button = buttons.find({digit: digit});
-            button.prop('onClick')({target: {value: digit}});
-            expect(onChange).toBeCalledWith({target: {value: digit}});
+            button.prop('onClick')(digit);
+            expect(onChange).toBeCalledWith(digit);
         }
     });
 });

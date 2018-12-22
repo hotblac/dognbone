@@ -17,9 +17,9 @@ describe('digit button', () => {
     });
 
     it('should notify caller on click', () => {
-        const wrapper = shallow(<DigitButton onClick={onClick}/>);
+        const wrapper = shallow(<DigitButton digit={digit} onClick={onClick}/>);
         wrapper.simulate('click');
-        expect(onClick).toBeCalled();
+        expect(onClick).toBeCalledWith(digit);
     });
 
 });

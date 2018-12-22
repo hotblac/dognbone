@@ -5,6 +5,9 @@ import { faPhone } from '@fortawesome/free-solid-svg-icons'
 import {Device} from "twilio-client";
 import { Keypad } from './Keypad';
 
+// Dial UK numbers only
+const countryCode = '+44';
+
 export class Dialler extends Component {
 
     constructor(props) {
@@ -19,8 +22,7 @@ export class Dialler extends Component {
         this.setState({number: phoneNumber});
     };
 
-    handleKeyPress = (event) => {
-        const keyPressed = event.target.value;
+    handleKeyPress = (keyPressed) => {
         this.setState((state, props) => ({
             number: state.number + keyPressed
         }));
@@ -32,8 +34,10 @@ export class Dialler extends Component {
     };
 
     initiateCall = () => {
-        console.log('Device.connect: number:' + this.state.number);
-        Device.connect({number: this.state.number});
+        // E.164 formatted phone number (including international calling code)
+        const phoneNumber = countryCode + this.state.number.replace(/^0/, ''); // Strip leading zero
+        console.log('Device.connect: number:' + phoneNumber);
+        Device.connect({number: phoneNumber});
     };
 
     endCall = () => {
@@ -58,13 +62,12 @@ export class Dialler extends Component {
     render() {
         return (
             <div>
-                <div id="phoneNumberField" className="field">
-                    <div className="control has-icons-left">
-                        <span className="icon is-left">
-                            <FontAwesomeIcon icon={faPhone} />
-                        </span>
+                <div id="phoneNumberField" className="field has-addons">
+                    <div className="control">
+                        <span id="countryCode" className="button is-static is-rounded">{countryCode}</span>
+                    </div>
+                    <div className="control">
                         <input type="text" className="input is-primary is-rounded"
-                               placeholder="+44"
                                value={this.state.number} onChange={this.handlePhoneNumberChange}/>
                     </div>
                 </div>

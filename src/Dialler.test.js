@@ -4,11 +4,13 @@ import { Dialler } from './Dialler';
 import { Keypad } from './Keypad';
 import { Device } from "twilio-client";
 
-const phoneNumber = '07700900000';
+const phoneNumber = '7700900000';
 
-// Mock Device behaviours
-Device.connect = jest.fn();
-Device.disconnectAll = jest.fn();
+beforeEach(() => {
+    // Mock Device behaviours
+    Device.connect = jest.fn();
+    Device.disconnectAll = jest.fn();
+});
 
 describe('call button', () => {
 
@@ -96,13 +98,24 @@ describe('phone number input', () => {
         expect(wrapper.state('number')).toBe(phoneNumber);
     });
 
-    it('should be passed to Device on connection', async () => {
+    it('should have country code prepended on connection', async () => {
         const wrapper = shallow(<Dialler/>);
         const input = wrapper.find('#phoneNumberField input');
+        const countryCodeSelector = wrapper.find('#countryCode');
         input.simulate('change', {target: {value: phoneNumber}});
 
         await clickCallButton(wrapper);
-        expect(Device.connect).toBeCalledWith({number: phoneNumber});
+        expect(Device.connect).toBeCalledWith({number: countryCodeSelector.text() + phoneNumber});
+    });
+
+    it('should have leading zero stripped and country code prepended on connection', async () => {
+        const wrapper = shallow(<Dialler/>);
+        const input = wrapper.find('#phoneNumberField input');
+        const countryCodeSelector = wrapper.find('#countryCode');
+        input.simulate('change', {target: {value: '0' + phoneNumber}});
+
+        await clickCallButton(wrapper);
+        expect(Device.connect).toBeCalledWith({number: countryCodeSelector.text() + phoneNumber});
     });
 
 });
@@ -119,7 +132,7 @@ describe('keypad', () => {
     it('should update phone number field', () => {
         const wrapper = shallow(<Dialler/>);
         const keypad = wrapper.find(Keypad);
-        keypad.prop('onChange')({target: {value: '#'}});
+        keypad.prop('onChange')('#');
         expect(wrapper.state('number')).toBe('#');
 
         const input = wrapper.find('#phoneNumberField input');
