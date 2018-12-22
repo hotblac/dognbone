@@ -64,7 +64,7 @@ export class Dialler extends Component {
             <div>
                 <div id="phoneNumberField" className="field has-addons">
                     <div className="control">
-                        <a id="countryCode" className="button is-static is-rounded">{countryCode}</a>
+                        <span id="countryCode" className="button is-static is-rounded">{countryCode}</span>
                     </div>
                     <div className="control">
                         <input type="text" className="input is-primary is-rounded"
