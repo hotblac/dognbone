@@ -19,8 +19,8 @@ export class Dialler extends Component {
         this.setState({number: phoneNumber});
     };
 
-    handleKeyPress = (event) => {
-        const keyPressed = event.target.value;
+    handleKeyPress = (keyPressed) => {
+        console.log(keyPressed);
         this.setState((state, props) => ({
             number: state.number + keyPressed
         }));

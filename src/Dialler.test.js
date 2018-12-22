@@ -119,7 +119,7 @@ describe('keypad', () => {
     it('should update phone number field', () => {
         const wrapper = shallow(<Dialler/>);
         const keypad = wrapper.find(Keypad);
-        keypad.prop('onChange')({target: {value: '#'}});
+        keypad.prop('onChange')('#');
         expect(wrapper.state('number')).toBe('#');
 
         const input = wrapper.find('#phoneNumberField input');
