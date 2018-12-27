@@ -25,5 +25,6 @@ app.post("/api/voice", (req, res) => {
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
-    console.log("Listening on port 8080!")
+    const version = process.env.npm_package_version;
+    console.log("Dognbone server " + version + " running on 8080!");
 });
