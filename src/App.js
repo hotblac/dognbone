@@ -97,6 +97,11 @@ class App extends Component {
                     </div>
                 </section>
                 <LoginModal visible={this.isLoginModalVisible()} deviceState={this.state.deviceState} onLogin={this.handleLogin}/>
+                <footer className="footer has-text-centered is-dark">
+                    <div className="content">
+                        <p><a href="https://github.com/hotblac/dognbone/tree/master">Dog n Bone @ Github</a></p>
+                    </div>
+                </footer>
             </div>
         );
     }
