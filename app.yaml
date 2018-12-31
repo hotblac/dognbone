@@ -1,5 +1,8 @@
 runtime: nodejs8
 
+env_variables:
+  npm_package_version: "1.0.4"
+
 handlers:
 - url: /.*
   secure: always
