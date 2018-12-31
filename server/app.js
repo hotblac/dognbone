@@ -3,10 +3,16 @@ const helmet = require('helmet');
 const twilio = require("./twilio");
 const app = express();
 
+const version = process.env.npm_package_version;
+
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('build'));
+
+app.get("/api/version", (req, res) => {
+   res.send(version);
+});
 
 app.post("/api/token", (req, res) => {
     const accountSid = req.body.accountSid;
@@ -25,5 +31,5 @@ app.post("/api/voice", (req, res) => {
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
-    console.log("Listening on port 8080!")
+    console.log("Dognbone server " + version + " running on 8080!");
 });

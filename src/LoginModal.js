@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import 'bulma/css/bulma.css'
-import * as api from "./CapabilityToken.api";
+import * as api from "./Backend.api";
 
 export class LoginModal extends Component {
 

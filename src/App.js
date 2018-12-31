@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Dialler } from "./Dialler";
 import { LoginModal } from "./LoginModal";
+import * as api from "./Backend.api";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faBone} from '@fortawesome/free-solid-svg-icons'
 import 'bulma/css/bulma.css'
@@ -12,6 +13,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            appVersion: 'UNKNOWN_VERSION',
             token: '',
             deviceState: '',
             deviceErrorCode: '',
@@ -43,6 +45,15 @@ class App extends Component {
         this.captureDeviceStateChange('incoming');
         this.captureDeviceStateChange('offline');
         this.captureDeviceStateChange('ready');
+
+        api.version()
+            .then(versionString => {
+                console.log('App version: ' + versionString);
+                this.setState({appVersion: versionString});
+            })
+            .catch(error => {
+                console.log('Failed to get app version: ' + error)
+            });
     }
 
     handleNotificationDismiss = () => {
@@ -97,6 +108,11 @@ class App extends Component {
                     </div>
                 </section>
                 <LoginModal visible={this.isLoginModalVisible()} deviceState={this.state.deviceState} onLogin={this.handleLogin}/>
+                <footer className="footer has-text-centered is-dark">
+                    <div className="content">
+                        <p><a href="https://github.com/hotblac/dognbone/tree/master">Dog n Bone {this.state.appVersion} @ Github</a></p>
+                    </div>
+                </footer>
             </div>
         );
     }
