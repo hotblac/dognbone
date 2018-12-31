@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { LoginModal } from './LoginModal';
-import * as api from "./CapabilityToken.api";
+import * as api from "./Backend.api";
 
 const validAccountSid = 'ACffffffffffffffffffffffffffffffff';
 const validAuthToken = 'ffffffffffffffffffffffffffffffff';
