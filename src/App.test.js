@@ -2,8 +2,14 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import App from './App';
 import { Device } from "twilio-client";
+import * as api from "./Backend.api";
 
 const capabilityToken = 'a_valid_token';
+const versionString = 'app_version';
+
+api.version = jest.fn(() => {
+  return Promise.resolve(versionString);
+});
 
 // Mock Device behaviours
 Device.setup = jest.fn(token => {});
@@ -137,5 +143,20 @@ describe('device status', () => {
   });
 
 });
+
+describe('footer', () => {
+
+  it('should contain version string', async () => {
+    const app = shallow(<App/>);
+    await flushPromises();
+
+    const footer = app.find('footer');
+    expect(footer.text()).toMatch(versionString)
+  });
+});
+
+function flushPromises() {
+  return new Promise(resolve => setImmediate(resolve));
+}
 
 

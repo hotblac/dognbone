@@ -19,6 +19,12 @@ export function capabilityToken(accountSid, authToken) {
         .then(response => response.text());
 }
 
+export function version() {
+    return fetch('/api/version')
+        .then(response => handleErrors(response))
+        .then(response => response.text());
+}
+
 function handleErrors(response) {
     if (response.ok) return response;
     else throw new Error(response.statusText);
