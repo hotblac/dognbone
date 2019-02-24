@@ -23,6 +23,20 @@ app.post("/api/token", (req, res) => {
     res.send(capabilityToken);
 });
 
+app.post("/api/appSid", (res, req, next) => {
+    const accountSid = req.body.accountSid;
+    const authToken = req.body.authToken;
+    console.log('Requesting app SID for account SID' + accountSid);
+    twilio.appSid(accountSid, authToken, (err, appSid) => {
+        if (!err) {
+            console.log('app SID: ' + appSid);
+            res.send(appSid);
+        } else {
+            next(err);
+        }
+    });
+});
+
 app.post("/api/voice", (req, res) => {
     const outgoingCallTwiML = twilio.voice(req.body.number);
     res.type('text/xml');

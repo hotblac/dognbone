@@ -19,6 +19,20 @@ export function capabilityToken(accountSid, authToken) {
         .then(response => response.text());
 }
 
+export function appSid(accountSid, authToken) {
+    const options = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            accountSid: accountSid,
+            authToken: authToken
+        })
+    };
+    return fetch('/api/appSid', options)
+        .then(response => handleErrors(response))
+        .then(response => response.text());
+}
+
 export function version() {
     return fetch('/api/version')
         .then(response => handleErrors(response))
