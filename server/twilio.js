@@ -14,24 +14,31 @@ module.exports = {
      *
      */
     token: (accountSid, authToken, fn) => {
-        const capability = new ClientCapability({
-            accountSid: accountSid,
-            authToken: authToken
-        });
+        verifyCreds(accountSid, authToken).then(() => {
 
-        // Find the SID of the Dog n Bone applicatiom associated with this account
-        // and add it as a client scope. This allows the client to connect to the app.
-        appSid(accountSid, authToken, (err, appSid) => {
-            if (!err) {
-                capability.addScope(
-                    new ClientCapability.OutgoingClientScope({
-                        applicationSid: appSid
-                    })
-                );
-                fn(null, capability.toJwt())
-            } else {
-                fn(err, '');
-            }
+            const capability = new ClientCapability({
+                accountSid: accountSid,
+                authToken: authToken
+            });
+
+            // Find the SID of the Dog n Bone applicatiom associated with this account
+            // and add it as a client scope. This allows the client to connect to the app.
+            appSid(accountSid, authToken, (err, appSid) => {
+                if (!err) {
+                    capability.addScope(
+                        new ClientCapability.OutgoingClientScope({
+                            applicationSid: appSid
+                        })
+                    );
+                    fn(null, capability.toJwt())
+                } else {
+                    fn(err, '');
+                }
+            });
+
+        }).catch(error => {
+            console.log("Credential check failed");
+            fn(error, '');
         });
     },
 
@@ -49,6 +56,18 @@ module.exports = {
     },
 
 };
+
+/**
+ * Verify that the given credentials are correct
+ * @param accountSid
+ * @param authToken
+ * @throws Error if credentials are incorrect
+ */
+function verifyCreds(accountSid, authToken) {
+    const client = require('twilio')(accountSid, authToken);
+    // Credentials are good if we can make any API call
+    return client.api.accounts(accountSid).fetch();
+}
 
 /**
  * Get the app SID of the Twilio application.
