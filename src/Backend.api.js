@@ -27,5 +27,5 @@ export function version() {
 
 function handleErrors(response) {
     if (response.ok) return response;
-    else throw new Error(response.statusText);
+    else throw response;
 }

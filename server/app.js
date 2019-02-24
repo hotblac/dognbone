@@ -22,7 +22,10 @@ app.post("/api/token", (req, res, next) => {
         if (!err) {
             res.send(token);
         } else {
-            next(err);
+            console.log("Failed to get capability token: " + err.message);
+            res.status(500).json({
+                message: err.message
+            });
         }
     });
 });
