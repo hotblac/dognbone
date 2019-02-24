@@ -14,23 +14,13 @@ app.get("/api/version", (req, res) => {
    res.send(version);
 });
 
-app.post("/api/token", (req, res) => {
+app.post("/api/token", (req, res, next) => {
     const accountSid = req.body.accountSid;
     const authToken = req.body.authToken;
     console.log('Requesting capability token for account SID: ' + accountSid);
-    const capabilityToken = twilio.token(accountSid, authToken);
-    console.log('Capability token: ' + capabilityToken);
-    res.send(capabilityToken);
-});
-
-app.post("/api/appSid", (res, req, next) => {
-    const accountSid = req.body.accountSid;
-    const authToken = req.body.authToken;
-    console.log('Requesting app SID for account SID' + accountSid);
-    twilio.appSid(accountSid, authToken, (err, appSid) => {
+    twilio.token(accountSid, authToken, (err, token) => {
         if (!err) {
-            console.log('app SID: ' + appSid);
-            res.send(appSid);
+            res.send(token);
         } else {
             next(err);
         }

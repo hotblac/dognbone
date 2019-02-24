@@ -8,20 +8,31 @@ module.exports = {
 
     /**
      * Obtain a token with outgoing call capability
-     * @returns {string} token
+     * @param accountSid
+     * @param authToken
+     * @param fn callback to receive (error, jwt)
+     *
      */
-    token: (accountSid, authToken) => {
+    token: (accountSid, authToken, fn) => {
         const capability = new ClientCapability({
             accountSid: accountSid,
             authToken: authToken
         });
 
-        capability.addScope(
-            new ClientCapability.OutgoingClientScope({
-                applicationSid: process.env.TWILIO_TWIML_APP_SID})
-        );
-
-        return capability.toJwt();
+        // Find the SID of the Dog n Bone applicatiom associated with this account
+        // and add it as a client scope. This allows the client to connect to the app.
+        appSid(accountSid, authToken, (err, appSid) => {
+            if (!err) {
+                capability.addScope(
+                    new ClientCapability.OutgoingClientScope({
+                        applicationSid: appSid
+                    })
+                );
+                fn(null, capability.toJwt())
+            } else {
+                fn(err, '');
+            }
+        });
     },
 
     /**
@@ -37,35 +48,37 @@ module.exports = {
         return voiceResponse.toString();
     },
 
-    /**
-     * Get the app SID of the Twilio application.
-     *
-     * @param accountSid
-     * @param authToken
-     * @param fn callback to receive (error, appSid)
-     */
-    appSid: (accountSid, authToken, fn) => {
-        const friendlyName = process.env.TWILIO_TWIML_APP_FRIENDLY_NAME;
-        const client = require('twilio')(accountSid, authToken);
-        console.log('Retrieving application with friendly name \'' + friendlyName + '\'...');
-
-        let found = false;
-        let error = null;
-        client.applications.each({
-            friendlyName: friendlyName,
-            callback: (item) => {
-                found = true;
-                console.log("Found application: " + item.sid);
-                fn(error, item.sid);
-            },
-            done: () => {
-                console.log('All applications retrieved ' + found);
-                if (!found) {
-                    console.log('Application not found: ' + friendlyName);
-                    error = Error('Application not found: ' + friendlyName);
-                    fn(error, '');
-                }
-            }
-        });
-    }
 };
+
+/**
+ * Get the app SID of the Twilio application.
+ * The application is looked up by the friendly name conigued as an environment variable.
+ *
+ * @param accountSid
+ * @param authToken
+ * @param fn callback to receive each app SID (error, appSid)
+ */
+function appSid (accountSid, authToken, fn) {
+    const friendlyName = process.env.TWILIO_TWIML_APP_FRIENDLY_NAME;
+    const client = require('twilio')(accountSid, authToken);
+    console.log('Retrieving application with friendly name \'' + friendlyName + '\'...');
+
+    let found = false;
+    let error = null;
+    client.applications.each({
+        friendlyName: friendlyName,
+        callback: (item) => {
+            found = true;
+            console.log("Found application: " + item.sid);
+            fn(error, item.sid);
+        },
+        done: () => {
+            console.log('All applications retrieved ' + found);
+            if (!found) {
+                console.log('Application not found: ' + friendlyName);
+                error = Error('Application not found: ' + friendlyName);
+                fn(error, '');
+            }
+        }
+    });
+}

@@ -5,7 +5,6 @@ const validAuthToken = 'ffffffffffffffffffffffffffffffff';
 
 // Mock API behaviour
 const mockCapabilityToken = 'MOCK_CAPABILITY_TOKEN';
-const mockAppSid = 'MOCK_APP_SID';
 const mockVersionString = "MOCK_VERSION";
 beforeEach(() => {
     fetch.resetMocks();
@@ -37,33 +36,6 @@ describe('capability token api', () => {
         expect(api.capabilityToken(validAccountSid, validAuthToken)).rejects.toEqual(new Error('Internal Server Error'));
     });
 
-});
-
-describe('appSid api', () => {
-
-    it('should request appSid from api', () => {
-        fetch.mockResponseOnce(mockAppSid);
-        api.appSid(validAccountSid, validAuthToken);
-
-        expect(fetch.mock.calls.length).toEqual(1);
-        expect(fetch.mock.calls[0][0]).toBe('/api/appSid');
-        expect(fetch.mock.calls[0][1].method).toBe('POST');
-        expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify({
-            accountSid: validAccountSid,
-            authToken: validAuthToken
-        }));
-    });
-
-    it('should return appSid on success', () => {
-        fetch.mockResponseOnce(mockAppSid);
-        const result = api.appSid(validAccountSid, validAuthToken);
-        expect(result).resolves.toBe(mockAppSid);
-    });
-
-    it('should throw exception on server error', () => {
-        fetch.mockResponseOnce('Error', {status: 500});
-        expect(api.appSid(validAccountSid, validAuthToken)).rejects.toEqual(new Error('Internal Server Error'));
-    });
 });
 
 describe('version api', () => {
