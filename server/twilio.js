@@ -21,7 +21,7 @@ module.exports = {
                 authToken: authToken
             });
 
-            // Find the SID of the Dog n Bone applicatiom associated with this account
+            // Find the SID of the Dog n Bone application associated with this account
             // and add it as a client scope. This allows the client to connect to the app.
             appSid(accountSid, authToken, (err, appSid) => {
                 if (!err) {
@@ -66,7 +66,9 @@ module.exports = {
 function verifyCreds(accountSid, authToken) {
     const client = require('twilio')(accountSid, authToken);
     // Credentials are good if we can make any API call
-    return client.api.accounts(accountSid).fetch();
+    return client.api.accounts(accountSid).fetch()
+        // On failure, replace the not found error with a more helpful error message
+        .catch(() => {throw new Error('Incorrect account SID / Auth Token')});
 }
 
 /**
