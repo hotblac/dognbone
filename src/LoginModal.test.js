@@ -13,7 +13,11 @@ api.capabilityToken = jest.fn((accountSid, authToken) => {
     if (accountSid === validAccountSid && authToken === validAuthToken) {
         return Promise.resolve(mockCapabilityToken);
     } else {
-        return Promise.reject(new Error('Incorrect auth token'));
+        return Promise.reject({
+            json: function () {
+                return Promise.resolve({message: 'Incorrect auth token'});
+            }
+        });
     }
 });
 
@@ -40,7 +44,7 @@ describe('login modal', () => {
 describe('form validation', () => {
 
     it('should show no errors on initial form', () => {
-        const wrapper = shallow(<LoginModal/>);
+        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
 
         const accountSidInput = wrapper.find('#accountSidField input');
         const accountSidValidationHelp = wrapper.find('#accountSidField .help');
@@ -54,7 +58,7 @@ describe('form validation', () => {
     });
 
     it('should show error on blank account SID', () => {
-        const wrapper = shallow(<LoginModal/>);
+        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
         submitForm(wrapper, '', validAuthToken);
 
         const accountSidInput = wrapper.find('#accountSidField input');
@@ -64,7 +68,7 @@ describe('form validation', () => {
     });
 
     it('should show error on blank auth token', () => {
-        const wrapper = shallow(<LoginModal/>);
+        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
         submitForm(wrapper, validAccountSid,'');
 
         const authTokenInput = wrapper.find('#authTokenField input');
@@ -74,7 +78,7 @@ describe('form validation', () => {
     });
 
     it('should show no errors on valid input', () => {
-        const wrapper = shallow(<LoginModal/>);
+        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
         submitForm(wrapper, validAccountSid, validAuthToken);
 
         const accountSidInput = wrapper.find('#accountSidField input');
