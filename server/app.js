@@ -14,20 +14,26 @@ app.get("/api/version", (req, res) => {
    res.send(version);
 });
 
-app.post("/api/token", (req, res, next) => {
+app.post("/api/token", (req, res) => {
     const accountSid = req.body.accountSid;
     const authToken = req.body.authToken;
     console.log('Requesting capability token for account SID: ' + accountSid);
-    twilio.token(accountSid, authToken, (err, token) => {
-        if (!err) {
-            res.send(token);
-        } else {
-            console.log("Failed to get capability token: " + err.message);
+
+    twilio.verifyCreds(accountSid, authToken)
+        .then(() => twilio.token(accountSid, authToken)
+            .then(token => res.send(token))
+            .catch(error => {
+                console.log("Failed to get capability token: " + error.message);
+                res.status(500).json({
+                    message: error.message
+                });
+            }))
+        .catch(error => {
+            console.log('Credential check failed');
             res.status(500).json({
-                message: err.message
+                message: error.message
             });
-        }
-    });
+        });
 });
 
 app.post("/api/voice", (req, res) => {

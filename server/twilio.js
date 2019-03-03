@@ -7,39 +7,43 @@ const VoiceResponse = twilio.twiml.VoiceResponse;
 module.exports = {
 
     /**
+     * Verify that the given credentials are correct
+     * @param accountSid
+     * @param authToken
+     * @throws Error if credentials are incorrect
+     */
+    verifyCreds: (accountSid, authToken) => {
+        const client = require('twilio')(accountSid, authToken);
+        // Credentials are good if we can make any API call
+        return client.api.accounts(accountSid).fetch()
+        // On failure, replace the not found error with a more helpful error message
+            .catch(() => {throw new Error('Incorrect account SID / Auth Token')});
+    },
+
+    /**
      * Obtain a token with outgoing call capability
      * @param accountSid
      * @param authToken
-     * @param fn callback to receive (error, jwt)
      *
      */
-    token: (accountSid, authToken, fn) => {
-        verifyCreds(accountSid, authToken).then(() => {
+    token: (accountSid, authToken) => {
 
-            const capability = new ClientCapability({
-                accountSid: accountSid,
-                authToken: authToken
-            });
-
-            // Find the SID of the Dog n Bone application associated with this account
-            // and add it as a client scope. This allows the client to connect to the app.
-            appSid(accountSid, authToken, (err, appSid) => {
-                if (!err) {
-                    capability.addScope(
-                        new ClientCapability.OutgoingClientScope({
-                            applicationSid: appSid
-                        })
-                    );
-                    fn(null, capability.toJwt())
-                } else {
-                    fn(err, '');
-                }
-            });
-
-        }).catch(error => {
-            console.log("Credential check failed");
-            fn(error, '');
+        const capability = new ClientCapability({
+            accountSid: accountSid,
+            authToken: authToken
         });
+
+        // Find the SID of the Dog n Bone application associated with this account
+        // and add it as a client scope. This allows the client to connect to the app.
+        return appSid(accountSid, authToken)
+            .then((appSid) => {
+                capability.addScope(
+                    new ClientCapability.OutgoingClientScope({
+                        applicationSid: appSid
+                    })
+                );
+                return capability.toJwt();
+            });
     },
 
     /**
@@ -58,48 +62,35 @@ module.exports = {
 };
 
 /**
- * Verify that the given credentials are correct
- * @param accountSid
- * @param authToken
- * @throws Error if credentials are incorrect
- */
-function verifyCreds(accountSid, authToken) {
-    const client = require('twilio')(accountSid, authToken);
-    // Credentials are good if we can make any API call
-    return client.api.accounts(accountSid).fetch()
-        // On failure, replace the not found error with a more helpful error message
-        .catch(() => {throw new Error('Incorrect account SID / Auth Token')});
-}
-
-/**
  * Get the app SID of the Twilio application.
- * The application is looked up by the friendly name conigued as an environment variable.
+ * The application is looked up by the friendly name configured as an environment variable.
  *
  * @param accountSid
  * @param authToken
- * @param fn callback to receive each app SID (error, appSid)
  */
-function appSid (accountSid, authToken, fn) {
+function appSid (accountSid, authToken) {
     const friendlyName = process.env.TWILIO_TWIML_APP_FRIENDLY_NAME;
     const client = require('twilio')(accountSid, authToken);
     console.log('Retrieving application with friendly name \'' + friendlyName + '\'...');
 
     let found = false;
-    let error = null;
-    client.applications.each({
-        friendlyName: friendlyName,
-        callback: (item) => {
-            found = true;
-            console.log("Found application: " + item.sid);
-            fn(error, item.sid);
-        },
-        done: () => {
-            console.log('All applications retrieved ' + found);
-            if (!found) {
-                console.log('Application not found: ' + friendlyName);
-                error = Error('Application not found: ' + friendlyName);
-                fn(error, '');
-            }
+    return new Promise(
+        (resolve, reject) => {
+            client.applications.each({
+                friendlyName: friendlyName,
+                callback: app => {
+                    found = true;
+                    console.log("Found application: " + app.sid);
+                    resolve(app.sid);
+                },
+                done: () => {
+                    console.log('Application found: ' + found);
+                    if (!found) {
+                        console.log('Application not found: ' + friendlyName);
+                        reject(new Error('Application not found: ' + friendlyName));
+                    }
+                }
+            });
         }
-    });
+    );
 }
