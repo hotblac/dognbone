@@ -36,8 +36,13 @@ app.post("/api/token", (req, res) => {
         });
 });
 
+app.post("/api/twilioNumbers", (req, res) => {
+    // TODO: Lookup from Twilio API
+    res.send(process.env.TWILIO_NUMBER);
+});
+
 app.post("/api/voice", (req, res) => {
-    const outgoingCallTwiML = twilio.voice(req.body.number);
+    const outgoingCallTwiML = twilio.voice(req.body.number, req.body.callerId);
     res.type('text/xml');
     res.send(outgoingCallTwiML);
 });

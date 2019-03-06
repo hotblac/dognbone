@@ -21,9 +21,24 @@ api.capabilityToken = jest.fn((accountSid, authToken) => {
     }
 });
 
+const mockTwilioNumber = '+447700900000';
+api.twilioNumbers = jest.fn((accountSid, authToken) => {
+    if (accountSid === validAccountSid && authToken === validAuthToken) {
+        return Promise.resolve(mockTwilioNumber);
+    } else {
+        return Promise.reject({
+            json: function () {
+                return Promise.resolve({message: 'Incorrect auth token'});
+            }
+        });
+    }
+});
+
 const onLogin = jest.fn();
+const onTwilioNumberLoaded = jest.fn();
 beforeEach(() => {
     onLogin.mockReset();
+    onTwilioNumberLoaded.mockReset();
 });
 
 describe('login modal', () => {
@@ -44,7 +59,7 @@ describe('login modal', () => {
 describe('form validation', () => {
 
     it('should show no errors on initial form', () => {
-        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
+        const wrapper = shallow(<LoginModal onLogin={onLogin} onTwilioNumberLoaded={onTwilioNumberLoaded}/>);
 
         const accountSidInput = wrapper.find('#accountSidField input');
         const accountSidValidationHelp = wrapper.find('#accountSidField .help');
@@ -58,7 +73,7 @@ describe('form validation', () => {
     });
 
     it('should show error on blank account SID', () => {
-        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
+        const wrapper = shallow(<LoginModal onLogin={onLogin} onTwilioNumberLoaded={onTwilioNumberLoaded}/>);
         submitForm(wrapper, '', validAuthToken);
 
         const accountSidInput = wrapper.find('#accountSidField input');
@@ -68,7 +83,7 @@ describe('form validation', () => {
     });
 
     it('should show error on blank auth token', () => {
-        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
+        const wrapper = shallow(<LoginModal onLogin={onLogin} onTwilioNumberLoaded={onTwilioNumberLoaded}/>);
         submitForm(wrapper, validAccountSid,'');
 
         const authTokenInput = wrapper.find('#authTokenField input');
@@ -78,7 +93,7 @@ describe('form validation', () => {
     });
 
     it('should show no errors on valid input', () => {
-        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
+        const wrapper = shallow(<LoginModal onLogin={onLogin} onTwilioNumberLoaded={onTwilioNumberLoaded}/>);
         submitForm(wrapper, validAccountSid, validAuthToken);
 
         const accountSidInput = wrapper.find('#accountSidField input');
@@ -96,19 +111,25 @@ describe('form validation', () => {
 describe('form submit', () => {
 
     it('should reject invalid input', async () => {
-        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
+        const wrapper = shallow(<LoginModal onLogin={onLogin} onTwilioNumberLoaded={onTwilioNumberLoaded}/>);
         await submitFormAndUpdate(wrapper, '', '');
         expect(onLogin).not.toBeCalled();
     });
 
     it('should return capability token to caller', async () => {
-        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
+        const wrapper = shallow(<LoginModal onLogin={onLogin} onTwilioNumberLoaded={onTwilioNumberLoaded}/>);
         await submitFormAndUpdate(wrapper, validAccountSid, validAuthToken);
         expect(onLogin).toBeCalledWith(mockCapabilityToken);
     });
 
+    it('should return twilio number to caller', async () => {
+        const wrapper = shallow(<LoginModal onLogin={onLogin} onTwilioNumberLoaded={onTwilioNumberLoaded}/>);
+        await submitFormAndUpdate(wrapper, validAccountSid, validAuthToken);
+        expect(onTwilioNumberLoaded).toBeCalledWith(mockTwilioNumber);
+    });
+
     it('should display error on auth failure', async () => {
-        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
+        const wrapper = shallow(<LoginModal onLogin={onLogin} onTwilioNumberLoaded={onTwilioNumberLoaded}/>);
         expect(wrapper.find('.notification').exists()).toBe(false);
 
         await submitFormAndUpdate(wrapper, validAccountSid, incorrectAuthToken);
@@ -124,7 +145,7 @@ describe('form submit', () => {
      * show the auth failure notification.
      */
     it('should display error on device offline', async () => {
-        const wrapper = shallow(<LoginModal onLogin={onLogin}/>);
+        const wrapper = shallow(<LoginModal onLogin={onLogin} onTwilioNumberLoaded={onTwilioNumberLoaded}/>);
         expect(wrapper.find('.notification').exists()).toBe(false);
 
         // User logs in

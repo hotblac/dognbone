@@ -37,7 +37,10 @@ export class Dialler extends Component {
         // E.164 formatted phone number (including international calling code)
         const phoneNumber = countryCode + this.state.number.replace(/^0/, ''); // Strip leading zero
         console.log('Device.connect: number:' + phoneNumber);
-        Device.connect({number: phoneNumber});
+        Device.connect({
+            number: phoneNumber,
+            callerId: this.props.callerId
+        });
     };
 
     endCall = () => {

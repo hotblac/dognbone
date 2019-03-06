@@ -5,6 +5,7 @@ import { Keypad } from './Keypad';
 import { Device } from "twilio-client";
 
 const phoneNumber = '7700900000';
+const callerId = '+447700900999';
 
 beforeEach(() => {
     // Mock Device behaviours
@@ -99,23 +100,29 @@ describe('phone number input', () => {
     });
 
     it('should have country code prepended on connection', async () => {
-        const wrapper = shallow(<Dialler/>);
+        const wrapper = shallow(<Dialler callerId={callerId}/>);
         const input = wrapper.find('#phoneNumberField input');
         const countryCodeSelector = wrapper.find('#countryCode');
         input.simulate('change', {target: {value: phoneNumber}});
 
         await clickCallButton(wrapper);
-        expect(Device.connect).toBeCalledWith({number: countryCodeSelector.text() + phoneNumber});
+        expect(Device.connect).toBeCalledWith({
+            number: countryCodeSelector.text() + phoneNumber,
+            callerId: callerId
+        });
     });
 
     it('should have leading zero stripped and country code prepended on connection', async () => {
-        const wrapper = shallow(<Dialler/>);
+        const wrapper = shallow(<Dialler callerId={callerId}/>);
         const input = wrapper.find('#phoneNumberField input');
         const countryCodeSelector = wrapper.find('#countryCode');
         input.simulate('change', {target: {value: '0' + phoneNumber}});
 
         await clickCallButton(wrapper);
-        expect(Device.connect).toBeCalledWith({number: countryCodeSelector.text() + phoneNumber});
+        expect(Device.connect).toBeCalledWith({
+            number: countryCodeSelector.text() + phoneNumber,
+            callerId: callerId
+        });
     });
 
 });

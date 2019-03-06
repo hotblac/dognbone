@@ -15,6 +15,7 @@ class App extends Component {
         this.state = {
             appVersion: 'UNKNOWN_VERSION',
             token: '',
+            twilioNumber: '',
             deviceState: '',
             deviceErrorCode: '',
             deviceErrorMessage: ''
@@ -68,6 +69,10 @@ class App extends Component {
         Device.setup(capabilityToken);
     };
 
+    handleTwilioNumberUpdate = (twilioNumber) => {
+        this.setState({twilioNumber: twilioNumber});
+    };
+
     /**
      * Show login modal if user has not logged in yet OR if given login
      * credentials were incorrect.
@@ -102,12 +107,13 @@ class App extends Component {
                                 <figure className="avatar is-dark">
                                     <FontAwesomeIcon icon={faBone} size="6x" className="has-text-grey"/>
                                 </figure>
-                                <Dialler deviceState={this.state.deviceState}/>
+                                <Dialler deviceState={this.state.deviceState} callerId={this.state.twilioNumber}/>
                             </div>
                         </div>
                     </div>
                 </section>
-                <LoginModal visible={this.isLoginModalVisible()} deviceState={this.state.deviceState} onLogin={this.handleLogin}/>
+                <LoginModal visible={this.isLoginModalVisible()} deviceState={this.state.deviceState}
+                            onLogin={this.handleLogin} onTwilioNumberLoaded={this.handleTwilioNumberUpdate}/>
                 <footer className="footer has-text-centered is-dark">
                     <div className="content">
                         <p><a href="https://github.com/hotblac/dognbone/tree/master">Dog n Bone {this.state.appVersion} @ Github</a></p>

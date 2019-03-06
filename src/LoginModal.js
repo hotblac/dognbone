@@ -60,6 +60,20 @@ export class LoginModal extends Component {
                             this.setState({tokenRequestError: message});
                         });
                 });
+
+            api.twilioNumbers(this.state.accountSid, this.state.authToken)
+                .then(twilioNumber => {
+                    console.log('Twilio number: ' + twilioNumber);
+                    this.props.onTwilioNumberLoaded(twilioNumber);
+                })
+                .catch(error => {
+                    error.json()
+                        .then(response => {
+                            const message = response.message || response;
+                            console.log('Request failed! ', message);
+                            this.setState({tokenRequestError: message});
+                        });
+                });
         }
     };
 

@@ -5,6 +5,7 @@ const validAuthToken = 'ffffffffffffffffffffffffffffffff';
 
 // Mock API behaviour
 const mockCapabilityToken = 'MOCK_CAPABILITY_TOKEN';
+const mockTwilioNumber = '+447700900000';
 const mockVersionString = "MOCK_VERSION";
 beforeEach(() => {
     fetch.resetMocks();
@@ -34,6 +35,34 @@ describe('capability token api', () => {
     it('should throw exception on server error', () => {
         fetch.mockResponseOnce('Error', {status: 500});
         expect(api.capabilityToken(validAccountSid, validAuthToken)).rejects.toEqual(new Error('Internal Server Error'));
+    });
+
+});
+
+describe('twilio numbers api', () => {
+
+    it('should request twilio numbers from api', () => {
+        fetch.mockResponseOnce(mockTwilioNumber);
+        api.twilioNumbers(validAccountSid, validAuthToken);
+
+        expect(fetch.mock.calls.length).toEqual(1);
+        expect(fetch.mock.calls[0][0]).toBe('/api/twilioNumbers');
+        expect(fetch.mock.calls[0][1].method).toBe('POST');
+        expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify({
+            accountSid: validAccountSid,
+            authToken: validAuthToken
+        }));
+    });
+
+    it('should return twilio number on success', () => {
+        fetch.mockResponseOnce(mockTwilioNumber);
+        const result = api.twilioNumbers(validAccountSid, validAuthToken);
+        expect(result).resolves.toBe(mockTwilioNumber);
+    });
+
+    it('should throw exception on server error', () => {
+        fetch.mockResponseOnce('Error', {status: 500});
+        expect(api.twilioNumbers(validAccountSid, validAuthToken)).rejects.toEqual(new Error('Internal Server Error'));
     });
 
 });

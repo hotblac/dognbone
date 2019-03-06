@@ -49,12 +49,13 @@ module.exports = {
     /**
      * Create TwiML for the outgoing call.
      * @param targetNumber number to be called
+     * @param callerId the phone number seen as the source of the call
      * @returns {string} TwiML describing the outgoing call
      */
-    voice: (targetNumber) => {
+    voice: (targetNumber, callerId) => {
         const voiceResponse = new VoiceResponse();
         voiceResponse.dial({
-            callerId: process.env.TWILIO_NUMBER,
+            callerId: callerId,
         }, targetNumber);
         return voiceResponse.toString();
     },
