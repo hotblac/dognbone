@@ -37,6 +37,12 @@ app.post("/api/token", (req, res) => {
 });
 
 app.post("/api/twilioNumbers", (req, res) => {
+    const accountSid = req.body.accountSid;
+    const authToken = req.body.authToken;
+    console.log('Twilio numbers associated with account SID: ' + accountSid);
+
+    twilio.twilioNumbers(accountSid, authToken);
+
     // TODO: Lookup from Twilio API
     res.send(process.env.TWILIO_NUMBER);
 });

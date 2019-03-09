@@ -46,6 +46,11 @@ module.exports = {
             });
     },
 
+    twilioNumbers: (accountSid, authToken) => {
+        const client = require('twilio')(accountSid, authToken);
+        client.incomingPhoneNumbers.each(incomingPhoneNumber => console.log(incomingPhoneNumber.phoneNumber));
+    },
+
     /**
      * Create TwiML for the outgoing call.
      * @param targetNumber number to be called
