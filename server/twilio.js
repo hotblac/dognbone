@@ -48,7 +48,22 @@ module.exports = {
 
     twilioNumbers: (accountSid, authToken) => {
         const client = require('twilio')(accountSid, authToken);
-        client.incomingPhoneNumbers.each(incomingPhoneNumber => console.log(incomingPhoneNumber.phoneNumber));
+        let phoneNumbers = [];
+
+        return new Promise((resolve, reject) => {
+            client.incomingPhoneNumbers.each({
+                callback: incomingPhoneNumber => phoneNumbers.push(incomingPhoneNumber.phoneNumber),
+                done: () => {
+                    if (phoneNumbers.length) {
+                        console.log('Found incoming phone numbers: ' + phoneNumbers);
+                        resolve(phoneNumbers);
+                    } else {
+                        console.log('No phone numbers found');
+                        reject(new Error('No phone incoming numbers found'));
+                    }
+                }
+            });
+        });
     },
 
     /**
@@ -80,23 +95,21 @@ function appSid (accountSid, authToken) {
     console.log('Retrieving application with friendly name \'' + friendlyName + '\'...');
 
     let found = false;
-    return new Promise(
-        (resolve, reject) => {
-            client.applications.each({
-                friendlyName: friendlyName,
-                callback: app => {
-                    found = true;
-                    console.log("Found application: " + app.sid);
-                    resolve(app.sid);
-                },
-                done: () => {
-                    console.log('Application found: ' + found);
-                    if (!found) {
-                        console.log('Application not found: ' + friendlyName);
-                        reject(new Error('Application not found: ' + friendlyName));
-                    }
+    return new Promise((resolve, reject) => {
+        client.applications.each({
+            friendlyName: friendlyName,
+            callback: app => {
+                found = true;
+                console.log("Found application: " + app.sid);
+                resolve(app.sid);
+            },
+            done: () => {
+                console.log('Application found: ' + found);
+                if (!found) {
+                    console.log('Application not found: ' + friendlyName);
+                    reject(new Error('Application not found: ' + friendlyName));
                 }
-            });
-        }
-    );
+            }
+        });
+    });
 }

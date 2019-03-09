@@ -41,10 +41,14 @@ app.post("/api/twilioNumbers", (req, res) => {
     const authToken = req.body.authToken;
     console.log('Twilio numbers associated with account SID: ' + accountSid);
 
-    twilio.twilioNumbers(accountSid, authToken);
-
-    // TODO: Lookup from Twilio API
-    res.send(process.env.TWILIO_NUMBER);
+    twilio.twilioNumbers(accountSid, authToken)
+        .then(phoneNumbers => res.send(phoneNumbers))
+        .catch(error => {
+            console.log('Failed to find phone numbers');
+            res.status(500).json({
+                message: error.message
+            });
+        });
 });
 
 app.post("/api/voice", (req, res) => {
