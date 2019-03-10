@@ -15,7 +15,7 @@ class App extends Component {
         this.state = {
             appVersion: 'UNKNOWN_VERSION',
             token: '',
-            twilioNumber: '',
+            twilioNumbers: '',
             deviceState: '',
             deviceErrorCode: '',
             deviceErrorMessage: ''
@@ -69,8 +69,8 @@ class App extends Component {
         Device.setup(capabilityToken);
     };
 
-    handleTwilioNumberUpdate = (twilioNumber) => {
-        this.setState({twilioNumber: twilioNumber});
+    handleTwilioNumberUpdate = (twilioNumbers) => {
+        this.setState({twilioNumbers: twilioNumbers});
     };
 
     /**
@@ -107,7 +107,7 @@ class App extends Component {
                                 <figure className="avatar is-dark">
                                     <FontAwesomeIcon icon={faBone} size="6x" className="has-text-grey"/>
                                 </figure>
-                                <Dialler deviceState={this.state.deviceState} callerId={this.state.twilioNumber}/>
+                                <Dialler deviceState={this.state.deviceState} twilioNumbers={this.state.twilioNumbers}/>
                             </div>
                         </div>
                     </div>

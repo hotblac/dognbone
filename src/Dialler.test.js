@@ -101,7 +101,8 @@ describe('phone number input', () => {
     });
 
     it('should have country code prepended on connection', async () => {
-        const wrapper = shallow(<Dialler callerId={callerId}/>);
+        const wrapper = shallow(<Dialler/>);
+        wrapper.setState({callerId: callerId});
         const input = wrapper.find('#phoneNumberField input');
         const countryCodeSelector = wrapper.find('#countryCode');
         input.simulate('change', {target: {value: phoneNumber}});
@@ -114,7 +115,8 @@ describe('phone number input', () => {
     });
 
     it('should have leading zero stripped and country code prepended on connection', async () => {
-        const wrapper = shallow(<Dialler callerId={callerId}/>);
+        const wrapper = shallow(<Dialler/>);
+        wrapper.setState({callerId: callerId});
         const input = wrapper.find('#phoneNumberField input');
         const countryCodeSelector = wrapper.find('#countryCode');
         input.simulate('change', {target: {value: '0' + phoneNumber}});

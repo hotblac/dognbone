@@ -19,6 +19,10 @@ export class Dialler extends Component {
         };
     }
 
+    componentWillReceiveProps(props) {
+        this.setState({ callerId: props.twilioNumbers[0] });
+    }
+
     handlePhoneNumberChange = (event) => {
         const phoneNumber = event.target.value;
         this.setState({number: phoneNumber});
@@ -46,7 +50,7 @@ export class Dialler extends Component {
         console.log('Device.connect: number:' + phoneNumber);
         Device.connect({
             number: phoneNumber,
-            callerId: this.props.callerId
+            callerId: this.state.callerId
         });
     };
 
@@ -72,7 +76,8 @@ export class Dialler extends Component {
     render() {
         return (
             <div>
-                <CallerIdDropdown twilioNumbers={this.props.callerId} callerId={this.state.callerId} onChange={this.handleCallerIdChange}/>
+                <p className="help">Caller ID: {this.state.callerId}</p>
+                <CallerIdDropdown twilioNumbers={this.props.twilioNumbers} callerId={this.state.callerId} onChange={this.handleCallerIdChange}/>
 
                 <div id="phoneNumberField" className="field has-addons">
                     <div className="control">
