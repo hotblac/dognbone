@@ -28,4 +28,11 @@ describe('caller id dropdown', () => {
         dropdownItems.at(2).simulate('click');
         expect(onChange).toBeCalledWith(twilioNumbers[2]);
     });
+
+    it('should be hidden when only one twilio number is available', () => {
+        const wrapper = shallow(<CallerIdDropdown callerId={callerId} twilioNumbers={[callerId]}/>);
+        expect(wrapper.text()).toContain('Caller ID: ' + callerId);
+        const dropdownItems = wrapper.find('.dropdown-item');
+        expect(dropdownItems.length).toBe(0);
+    });
 });
