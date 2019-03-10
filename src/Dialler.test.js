@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 import { Dialler } from './Dialler';
 import { Keypad } from './Keypad';
 import { Device } from "twilio-client";
+import {CallerIdDropdown} from "./CallerIdDropdown";
 
 const phoneNumber = '7700900000';
 const callerId = '+447700900999';
@@ -144,6 +145,15 @@ describe('keypad', () => {
 
         const input = wrapper.find('#phoneNumberField input');
         expect(input.props().value).toBe('#');
+    });
+});
+
+describe('caller id dropdown', () => {
+
+    it('should be visible', () => {
+        const wrapper = shallow(<Dialler/>);
+        const dropdown = wrapper.find(CallerIdDropdown);
+        expect(dropdown.exists()).toBe(true);
     });
 });
 

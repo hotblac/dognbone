@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPhone } from '@fortawesome/free-solid-svg-icons'
 import {Device} from "twilio-client";
 import { Keypad } from './Keypad';
+import {CallerIdDropdown} from "./CallerIdDropdown";
 
 // Dial UK numbers only
 const countryCode = '+44';
@@ -13,7 +14,8 @@ export class Dialler extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            number: ''
+            number: '',
+            callerId: ''
         };
     }
 
@@ -31,6 +33,11 @@ export class Dialler extends Component {
     handleCallButtonClick = () => {
         if (this.callIsActive()) this.endCall();
         else this.initiateCall();
+    };
+
+    handleCallerIdChange = (event) => {
+        const callerId = event.target.value;
+        this.setState({callerId: callerId});
     };
 
     initiateCall = () => {
@@ -65,6 +72,8 @@ export class Dialler extends Component {
     render() {
         return (
             <div>
+                <CallerIdDropdown twilioNumbers={this.props.callerId} callerId={this.state.callerId} onChange={this.handleCallerIdChange}/>
+
                 <div id="phoneNumberField" className="field has-addons">
                     <div className="control">
                         <span id="countryCode" className="button is-static is-rounded">{countryCode}</span>

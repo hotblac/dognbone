@@ -30,7 +30,7 @@ export function twilioNumbers(accountSid, authToken) {
     };
     return fetch('/api/twilioNumbers', options)
         .then(response => handleErrors(response))
-        .then(response => response.text());
+        .then(response => response.json());
 }
 
 export function version() {
