@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import 'bulma/css/bulma.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPhone } from '@fortawesome/free-solid-svg-icons'
+import {faPhone} from '@fortawesome/free-solid-svg-icons'
 import {Device} from "twilio-client";
 import { Keypad } from './Keypad';
 import {CallerIdDropdown} from "./CallerIdDropdown";
@@ -39,8 +39,7 @@ export class Dialler extends Component {
         else this.initiateCall();
     };
 
-    handleCallerIdChange = (event) => {
-        const callerId = event.target.value;
+    handleCallerIdChange = (callerId) => {
         this.setState({callerId: callerId});
     };
 
@@ -76,7 +75,6 @@ export class Dialler extends Component {
     render() {
         return (
             <div>
-                <p className="help">Caller ID: {this.state.callerId}</p>
                 <CallerIdDropdown twilioNumbers={this.props.twilioNumbers} callerId={this.state.callerId} onChange={this.handleCallerIdChange}/>
 
                 <div id="phoneNumberField" className="field has-addons">

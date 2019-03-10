@@ -157,6 +157,14 @@ describe('caller id dropdown', () => {
         const dropdown = wrapper.find(CallerIdDropdown);
         expect(dropdown.exists()).toBe(true);
     });
+
+    it('should update the callerId', () => {
+        const newCallerId = 'newCallerId'
+        const wrapper = shallow(<Dialler/>);
+        const dropdown = wrapper.find(CallerIdDropdown);
+        dropdown.prop('onChange')(newCallerId);
+        expect(wrapper.state('callerId')).toBe(newCallerId);
+    });
 });
 
 async function clickCallButton(wrapper) {
