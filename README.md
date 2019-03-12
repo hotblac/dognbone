@@ -32,7 +32,7 @@ to build the application.
 
 # Run
 
-The application requires private Twilio account information to be set in the .env file. See [.env.example](https://github.com/hotblac/dognbone/blob/develop/.env.example) for an example .env file. Rename this file as .env and then set the `TWILIO_TWIML_APP_SID` and `TWILIO_NUMBER` to values created in the Setup steps.
+The application requires environment infomation to be set in the .env file. See [.env.example](https://github.com/hotblac/dognbone/blob/develop/.env.example) for an example .env file. Rename this file as .env and then set the `TWILIO_TWIML_APP_FRIENDLY_NAME` to your TwiML application's friendly name ('Dog n Bone').
 
 The application can then be run locally with
 
@@ -55,7 +55,7 @@ You should now be able to login to Dog n Bone on http://localhost:8080, login wi
 
 Dog n Bone is a Node JS application so can be deployed to [Google App Engine](https://cloud.google.com/appengine/) (standard environment). See the [Hello World example](https://cloud.google.com/nodejs/getting-started/hello-world) for instructions on setting up a Google Cloud Platform project and installing the Google Cloud SDK to your local machine.
 
-Before deploying, you'll need to build the application and create a .env file as detailed above. The Google App Engine descriptor file (app.yaml) is included in the source code.
+Before deploying, you'll need to build the application. The Google App Engine descriptor file (app.yaml) is included in the source code.
 
 Once you've set up the CGP project and have the command line tools, Dog n Bone can be deployed with
 
@@ -70,5 +70,5 @@ It will deploy to `https://<something>.appspot.com`. Set this URL as the Voice R
 
 Dog n Bone is a Node JS application so should be good to deploy to other PaaS vendors such as [Heroku](https://www.heroku.com/) or [AWS Elastic Beanstalk](https://aws.amazon.com/elasticbeanstalk/). I've tested only on Google App Engine though so you're on your own for this. Don't forget to:
 
-* Deploy your .env file or otherwise set the `TWILIO_TWIML_APP_SID` and `TWILIO_NUMBER` environment variables in your deployment.
+* Deploy your .env file or otherwise set the `TWILIO_TWIML_APP_FRIENDLY_NAME` environment variable in your deployment.
 * Set the Voice Request URL of your [TwiML application](https://www.twilio.com/console/phone-numbers/runtime/twiml-apps) to your deployment's `/api/voice` endpoint.
