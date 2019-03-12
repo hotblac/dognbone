@@ -15,7 +15,6 @@ before_install:
     -d
 
 # Deploy to Google App Engine
-before_deploy: "./deploy/create_env_file.sh"
 deploy:
   provider:  gae
   keyfile: './deploy/travisci_google_service_account.json'
