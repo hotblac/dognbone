@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import 'bulma/css/bulma.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPhone } from '@fortawesome/free-solid-svg-icons'
+import {faPhone} from '@fortawesome/free-solid-svg-icons'
 import {Device} from "twilio-client";
 import { Keypad } from './Keypad';
+import {CallerIdDropdown} from "./CallerIdDropdown";
 
 // Dial UK numbers only
 const countryCode = '+44';
@@ -13,8 +14,13 @@ export class Dialler extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            number: ''
+            number: '',
+            callerId: ''
         };
+    }
+
+    componentWillReceiveProps(props) {
+        this.setState({ callerId: props.twilioNumbers[0] });
     }
 
     handlePhoneNumberChange = (event) => {
@@ -33,11 +39,18 @@ export class Dialler extends Component {
         else this.initiateCall();
     };
 
+    handleCallerIdChange = (callerId) => {
+        this.setState({callerId: callerId});
+    };
+
     initiateCall = () => {
         // E.164 formatted phone number (including international calling code)
         const phoneNumber = countryCode + this.state.number.replace(/^0/, ''); // Strip leading zero
         console.log('Device.connect: number:' + phoneNumber);
-        Device.connect({number: phoneNumber});
+        Device.connect({
+            number: phoneNumber,
+            callerId: this.state.callerId
+        });
     };
 
     endCall = () => {
@@ -62,6 +75,8 @@ export class Dialler extends Component {
     render() {
         return (
             <div>
+                <CallerIdDropdown twilioNumbers={this.props.twilioNumbers} callerId={this.state.callerId} onChange={this.handleCallerIdChange}/>
+
                 <div id="phoneNumberField" className="field has-addons">
                     <div className="control">
                         <span id="countryCode" className="button is-static is-rounded">{countryCode}</span>

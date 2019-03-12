@@ -1,7 +1,8 @@
 runtime: nodejs8
 
 env_variables:
-  npm_package_version: "1.0.4"
+  npm_package_version: "1.1.0"
+  TWILIO_TWIML_APP_FRIENDLY_NAME: "Dog n Bone"
 
 handlers:
 - url: /.*

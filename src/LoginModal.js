@@ -53,8 +53,26 @@ export class LoginModal extends Component {
                     this.props.onLogin(capabilityToken);
                 })
                 .catch(error => {
-                    console.log('Request failed', error);
-                    this.setState({tokenRequestError: error.toString()});
+                    error.json()
+                        .then(response => {
+                            const message = response.message || response;
+                            console.log('Request failed! ', message);
+                            this.setState({tokenRequestError: message});
+                        });
+                });
+
+            api.twilioNumbers(this.state.accountSid, this.state.authToken)
+                .then(twilioNumber => {
+                    console.log('Twilio number: ' + twilioNumber);
+                    this.props.onTwilioNumberLoaded(twilioNumber);
+                })
+                .catch(error => {
+                    error.json()
+                        .then(response => {
+                            const message = response.message || response;
+                            console.log('Request failed! ', message);
+                            this.setState({tokenRequestError: message});
+                        });
                 });
         }
     };
