@@ -7,19 +7,14 @@ cache:
 script:
 - npm run build
 - npm test
-
-# Decrypt Google API key
 before_install:
-  - openssl aes-256-cbc -K $encrypted_f2e7221f9a5f_key -iv $encrypted_f2e7221f9a5f_iv
-    -in ./deploy/travisci_google_service_account.json.enc -out ./deploy/travisci_google_service_account.json
-    -d
-
-# Deploy to Google App Engine
+- openssl aes-256-cbc -K $encrypted_19da85edd781_key -iv $encrypted_19da85edd781_iv
+  -in ./deploy/travisci_google_service_account.json.enc -out ./deploy/travisci_google_service_account.json
+  -d
 deploy:
-  provider:  gae
-  keyfile: './deploy/travisci_google_service_account.json'
+  provider: gae
+  keyfile: "./deploy/travisci_google_service_account.json"
   project: dognbone
   skip_cleanup: true
   on:
     branch: master
-
