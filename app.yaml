@@ -1,4 +1,4 @@
-runtime: nodejs8
+runtime: nodejs12
 
 env_variables:
   npm_package_version: "1.1.0"
