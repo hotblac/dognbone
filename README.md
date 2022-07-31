@@ -65,6 +65,8 @@ It will deploy to `https://<something>.appspot.com`. Set this URL as the Voice R
                                                                      
 `https://<something>.appspot.com/api/voice`
 
+See [Secrets in Google App Engine](https://www.dontpanicblog.co.uk/2019/04/27/secrets-in-google-app-engine/) for information on managing secrets in GKE.
+
 
 ## Deploy to other PaaS vendors
 
